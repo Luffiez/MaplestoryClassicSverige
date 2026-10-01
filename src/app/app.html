@@ -1,4 +1,18 @@
 <div class="app-shell">
+  <div class="auth-buttons">
+    <button type="button" class="mute-toggle" (click)="toggleMute()"
+      [attr.aria-label]="isMuted() ? 'Unmute sound' : 'Mute sound'">
+      {{ isMuted() ? '🔇' : '🔊' }}
+    </button>
+    <button *ngIf="!authService.isAuthenticated()" class="btn-discord"
+      (click)="playButtonSfx(); authService.loginWithDiscord()">
+      <span class="discord-icon">Discord</span>
+    </button>
+    <button *ngIf="authService.isAuthenticated()" class="logout" (click)="playButtonSfx(); authService.logout()">
+      Logout
+    </button>
+  </div>
+
   <header class="navbar">
     <div class="nav-container">
       <div class="nav-right">
@@ -8,19 +22,6 @@
             <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Players</a></li>
           </ul>
         </nav>
-        <div class="auth-buttons">
-          <button type="button" class="mute-toggle" (click)="toggleMute()"
-            [attr.aria-label]="isMuted() ? 'Unmute sound' : 'Mute sound'">
-            {{ isMuted() ? '🔇' : '🔊' }}
-          </button>
-          <button *ngIf="!authService.isAuthenticated()" class="btn-discord"
-            (click)="playButtonSfx(); authService.loginWithDiscord()">
-            <span class="discord-icon">Discord</span>
-          </button>
-          <button *ngIf="authService.isAuthenticated()" class="logout" (click)="playButtonSfx(); authService.logout()">
-            Logout
-          </button>
-        </div>
       </div>
     </div>
   </header>

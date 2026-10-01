@@ -14,39 +14,51 @@
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">
-        <div class="player-card" *ngFor="let player of players()">
-            <div class="player-header">
-                <h2>Discord: {{ player.discordUsername || player.discordUserId }}</h2>
-                <p class="created-date">Joined: {{ player.createdAt | date: 'short' }}</p>
-            </div>
+        <details class="player-card" *ngFor="let player of players()">
+            <summary class="player-header">
+                <span class="player-summary-main">
+                    <span class="chevron" aria-hidden="true">▼</span>
+                    <span class="player-name">{{ player.discordUsername || player.discordUserId }}</span>
+                </span>
+                <span class="player-character-count">
+                    Member since: {{ player.createdAt | date: 'short' }}
+                </span>
+            </summary>
 
-            <div class="characters-section" *ngIf="player.characters.length > 0">
-                <h3>Characters ({{ player.characters.length }})</h3>
-                <div class="character-list">
-                    <div class="character-item" *ngFor="let character of player.characters">
-                        <div class="character-image" *ngIf="character.characterImageUrl">
-                            <img [src]="character.characterImageUrl" [alt]="character.characterName" />
-                        </div>
-                        <div class="character-info">
-                            <h4>{{ character.characterName }}</h4>
-                            <div class="character-details">
-                                <span><strong>Level:</strong> {{ character.level }}</span>
-                                <span><strong>Class:</strong> {{ character.class }}</span>
-                                <span><strong>Job:</strong> {{ character.job }}</span>
-                                <span><strong>World:</strong> {{ character.world }}</span>
-                                <span *ngIf="character.rank"><strong>Rank:</strong> {{ character.rank }}</span>
-                                <span><strong>Primary:</strong> {{ character.isPrimary ? 'Yes' : 'No' }}</span>
-                                <span><strong>Last Synced:</strong> {{ character.lastSyncedAt | date: 'short' }}</span>
+            <div class="player-body">
+                <div class="characters-section" *ngIf="player.characters.length > 0">
+                    <div class="character-list">
+                        <div class="character-item" *ngFor="let character of player.characters">
+                            <div class="character-image"
+                                *ngIf="character.characterImageUrl; else missingCharacterImage">
+                                <img [src]="character.characterImageUrl" [alt]="character.characterName" />
+                            </div>
+                            <ng-template #missingCharacterImage>
+                                <div class="character-image missing-image" aria-label="Missing character image">
+                                    Missing
+                                </div>
+                            </ng-template>
+                            <div class="character-info">
+                                <h4>{{ character.characterName }}</h4>
+                                <div class="character-details">
+                                    <span><strong>Level:</strong> {{ character.level }}</span>
+                                    <span><strong>Job:</strong> {{ character.job }}</span>
+                                    <span *ngIf="character.rank"><strong>Rank:</strong> {{ character.rank }}</span>
+                                    <span><strong>Last Synced:</strong> {{ character.lastSyncedAt | date:
+                                        'short'}}</span>
+                                </div>
                             </div>
                         </div>
                     </div>
+
+                </div>
+
+
+                <div class="no-characters" *ngIf="player.characters.length === 0">
+                    No characters found for this player.
                 </div>
             </div>
-
-            <div class="no-characters" *ngIf="player.characters.length === 0">
-                No characters found for this player.
-            </div>
-        </div>
+        </details>
     </div>
 
     <div class="pagination" *ngIf="!isLoading() && players().length > 0">

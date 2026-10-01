@@ -12,7 +12,7 @@
     border: 4px solid #4d3b2a;
     border-radius: 0;
     box-shadow: 0 8px 0 rgba(0, 0, 0, 0.3), 0 18px 35px var(--retro-shadow);
-    overflow: hidden;
+    overflow: visible;
     position: relative;
 }
 
@@ -32,6 +32,21 @@
 .content-panel {
     position: relative;
     z-index: 1;
+}
+
+.app-shell {
+    position: relative;
+}
+
+.auth-buttons {
+    position: absolute;
+    top: -40px;
+    right: 0px;
+    z-index: 4;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+    justify-content: flex-end;
 }
 
 .navbar {
@@ -170,16 +185,17 @@
 
 .btn-discord {
     display: inline-block;
-    padding: 0.75rem 1.2rem;
+    padding: 0.45rem 0.8rem;
     background: linear-gradient(180deg, #5b88d8 0%, #3b6db0 100%);
     color: white;
     text-decoration: none;
-    border: 3px solid #2d466d;
-    box-shadow: 0 4px 0 #1f3551;
+    border: 2px solid #2d466d;
+    box-shadow: 0 3px 0 #1f3551;
     cursor: var(--clickable-cursor);
     font-weight: 800;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.04em;
+    font-size: 0.72rem;
     transition: transform 0.15s ease;
 }
 
@@ -187,52 +203,46 @@
     transform: translateY(-1px);
 }
 
-.auth-buttons {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    justify-content: flex-end;
-}
-
 .auth-buttons button,
 .auth-buttons a {
     display: inline-block;
     background: linear-gradient(180deg, #5b88d8 0%, #3b6db0 100%);
     color: white;
-    border: 3px solid #2d466d;
-    box-shadow: 0 4px 0 #1f3551;
-    padding: 0.7rem 1rem;
+    border: 2px solid #2d466d;
+    box-shadow: 0 3px 0 #1f3551;
+    padding: 0.45rem 0.7rem;
     cursor: var(--clickable-cursor);
     text-decoration: none;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.04em;
+    font-size: 0.72rem;
     transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .auth-buttons button:hover,
 .auth-buttons a:hover {
     transform: translateY(-1px);
-    box-shadow: 0 5px 0 #1f3551;
+    box-shadow: 0 4px 0 #1f3551;
 }
 
 .mute-toggle {
-    min-width: 52px;
-    padding: 0.7rem 0.8rem;
-    font-size: 1.2rem;
+    min-width: 38px;
+    padding: 0.45rem 0.55rem;
+    font-size: 1rem;
     line-height: 1;
     background: linear-gradient(180deg, #efb75d 0%, #d18a2b 100%);
     border-color: #4d3b2a;
-    box-shadow: 0 4px 0 #8b5a1a;
+    box-shadow: 0 3px 0 #8b5a1a;
 }
 
 .auth-buttons .logout {
     background: linear-gradient(180deg, #cc6f5c 0%, #9d4838 100%);
     border-color: #5f2c21;
-    box-shadow: 0 4px 0 #472118;
+    box-shadow: 0 3px 0 #472118;
 }
 
 .auth-buttons .logout:hover {
     transform: translateY(-1px);
-    box-shadow: 0 5px 0 #472118;
+    box-shadow: 0 4px 0 #472118;
 }
