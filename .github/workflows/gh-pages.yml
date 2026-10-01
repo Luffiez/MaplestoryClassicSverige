@@ -8,8 +8,9 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
       env:
-        # For a project page set to "/<repo>/". For a user/org site set to "/".
-        BASE_HREF: /${{ github.event.repository.name }}/
+        # For a project page set explicitly to the repo name below.
+        # If this is a user/org site, change this to "/".
+        BASE_HREF: /MaplestoryClassicSverige/
     steps:
       - uses: actions/checkout@v4
 
