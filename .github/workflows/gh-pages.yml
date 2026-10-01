@@ -7,8 +7,9 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      BASE_HREF: /${{ github.event.repository.name }}/   # change to "/" for username.github.io
+      env:
+        # For a project page set to "/<repo>/". For a user/org site set to "/".
+        BASE_HREF: /${{ github.event.repository.name }}/
     steps:
       - uses: actions/checkout@v4
 
@@ -25,10 +26,11 @@ jobs:
 
       - name: Add SPA fallback
         run: |
-          cp dist/maplestory-classic-web/index.html dist/maplestory-classic-web/404.html
+          cp dist/maplestory-classic-web/browser/index.html dist/maplestory-classic-web/browser/404.html
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./dist/maplestory-classic-web
+          # The Angular build outputs the production-ready files in the `browser` subfolder.
+          publish_dir: ./dist/maplestory-classic-web/browser
