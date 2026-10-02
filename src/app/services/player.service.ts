@@ -10,7 +10,7 @@ import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
     providedIn: 'root'
 })
 export class PlayerService {
-    private apiUrl = 'http://localhost:5184/api/users';
+    private apiUrl = `${environment.backendUrl}/api/users`;
 
     constructor(
         private http: HttpClient,

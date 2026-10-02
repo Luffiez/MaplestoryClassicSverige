@@ -13,7 +13,7 @@ export class AuthService {
     private readonly DISCORD_CLIENT_ID = '1545334393059409952';
     private readonly REDIRECT_URI = environment.discordRedirectUri;
     private readonly DISCORD_AUTH_URL = 'https://discord.com/api/oauth2/authorize';
-    private readonly BACKEND_URL = 'http://localhost:5184';
+    private readonly BACKEND_URL = environment.backendUrl;
     private readonly TOKEN_KEY = 'discord_auth_token';
 
     isAuthenticated = signal(false);
