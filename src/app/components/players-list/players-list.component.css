@@ -1,7 +1,10 @@
 .players-container {
+    position: relative;
+    z-index: 1;
     padding: 20px;
     max-width: 1200px;
     margin: 0 auto;
+    background: rgba(255, 255, 255, 0.82);
 }
 
 h1 {
@@ -40,7 +43,13 @@ h1 {
 .player-card {
     border: 1px solid #ddd;
     border-radius: 8px;
-    background-color: #f9f9f9;
+    background:
+        repeating-linear-gradient(180deg,
+            rgba(77, 59, 42, 0.04),
+            rgba(77, 59, 42, 0.04) 2px,
+            transparent 2px,
+            transparent 5px),
+        linear-gradient(180deg, #f9f3e8 0%, #f1e4d0 100%);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     overflow: hidden;
 }

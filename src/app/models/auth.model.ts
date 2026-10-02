@@ -8,8 +8,8 @@ export interface AuthToken {
 export interface AuthUser {
     id: string;
     username: string;
-    discriminator: string;
-    avatar: string | null;
+    discriminator?: string;
+    avatar?: string | null;
     email?: string;
 }
 

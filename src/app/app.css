@@ -29,6 +29,7 @@
 }
 
 .navbar,
+.announcement-banner,
 .content-panel {
     position: relative;
     z-index: 1;
@@ -53,6 +54,73 @@
     background: rgba(255, 249, 241, 0.9);
     padding: 0;
     border-bottom: 4px solid #4d3b2a;
+}
+
+.announcement-banner {
+    display: flex;
+    height: 26px;
+    overflow: hidden;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, rgba(23, 46, 88, 0.82) 0%, rgba(10, 23, 53, 0.82) 100%);
+    border-top: 2px solid #859da2;
+    border-bottom: 2px solid #18233a;
+    box-shadow:
+        inset 0 1px 0 #c1ccca,
+        inset 0 -1px 0 #315170;
+    color: #ced768;
+    font-family: var(--maple-heading);
+    font-size: 12px;
+    letter-spacing: 0;
+    line-height: 22px;
+    white-space: nowrap;
+}
+
+.announcement-viewport {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+}
+
+.announcement-track {
+    display: flex;
+    width: max-content;
+    animation: announcement-scroll 20s linear infinite;
+    text-shadow: 1px 1px 0 #11182b;
+}
+
+.announcement-content {
+    display: flex;
+    flex-shrink: 0;
+}
+
+.announcement-track span {
+    padding-right: 5rem;
+}
+
+.announcement-track strong {
+    color: #f4df43;
+    font-weight: 700;
+}
+
+.announcement-track em {
+    color: #70b9d7;
+    font-style: normal;
+}
+
+.announcement-banner:hover .announcement-track {
+    animation-play-state: paused;
+}
+
+@keyframes announcement-scroll {
+    to {
+        transform: translateX(-50%);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .announcement-track {
+        animation: none;
+    }
 }
 
 .nav-container {
@@ -184,23 +252,21 @@
 }
 
 .btn-discord {
-    display: inline-block;
-    padding: 0.45rem 0.8rem;
     background: linear-gradient(180deg, #5b88d8 0%, #3b6db0 100%);
     color: white;
-    text-decoration: none;
-    border: 2px solid #2d466d;
-    box-shadow: 0 3px 0 #1f3551;
     cursor: var(--clickable-cursor);
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    font-size: 0.72rem;
     transition: transform 0.15s ease;
 }
 
 .btn-discord:hover {
     transform: translateY(-1px);
+}
+
+.discord-mark {
+    display: block;
+    height: 1rem;
+    object-fit: contain;
+    transform: scale(1.3);
 }
 
 .auth-buttons button,
@@ -226,14 +292,29 @@
     box-shadow: 0 4px 0 #1f3551;
 }
 
-.mute-toggle {
+.auth-buttons .btn-discord {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    padding: 0.45rem 0.7rem;
+}
+
+.auth-buttons .mute-toggle,
+.auth-buttons .logout {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
     min-width: 38px;
-    padding: 0.45rem 0.55rem;
+    padding: 0.45rem 0.7rem;
+}
+
+.auth-buttons .mute-toggle mat-icon,
+.auth-buttons .logout mat-icon {
+    width: 1rem;
+    height: 1rem;
     font-size: 1rem;
     line-height: 1;
-    background: linear-gradient(180deg, #efb75d 0%, #d18a2b 100%);
-    border-color: #4d3b2a;
-    box-shadow: 0 3px 0 #8b5a1a;
 }
 
 .auth-buttons .logout {

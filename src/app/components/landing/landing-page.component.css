@@ -35,27 +35,3 @@ h1 {
     font-size: 1.12rem;
     line-height: 1.7;
 }
-
-.btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.7rem;
-    width: fit-content;
-    padding: 0.9rem 1.5rem;
-    margin-top: 1.5rem;
-    background: linear-gradient(180deg, #5b88d8 0%, #3b6db0 100%);
-    color: #fffdf7;
-    text-decoration: none;
-    border: 3px solid #2d466d;
-    box-shadow: 0 4px 0 #1f3551;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    cursor: pointer;
-}
-
-.discord-mark {
-    display: inline-block;
-    font-size: 1.1rem;
-    line-height: 1;
-}

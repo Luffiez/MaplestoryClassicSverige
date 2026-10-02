@@ -42,7 +42,17 @@ export class AuthService {
         if (token) {
             this.authToken.set(token);
             this.isAuthenticated.set(true);
+            this.loadCurrentUser();
         }
+    }
+
+    private loadCurrentUser(): void {
+        this.http.get<AuthUser>(`${this.BACKEND_URL}/api/auth/me`, {
+            headers: this.getAuthHeader()
+        }).subscribe({
+            next: user => this.user.set(user),
+            error: () => this.clearAuth()
+        });
     }
 
     loginWithDiscord(): void {
@@ -76,16 +86,21 @@ export class AuthService {
                 this.authToken.set(response.token);
                 this.isAuthenticated.set(true);
                 localStorage.setItem(this.TOKEN_KEY, response.token);
+                this.loadCurrentUser();
             })
         );
     }
 
     logout(): void {
+        this.clearAuth();
+        this.router.navigate(['/']);
+    }
+
+    private clearAuth(): void {
         this.authToken.set(null);
         this.user.set(null);
         this.isAuthenticated.set(false);
         localStorage.removeItem(this.TOKEN_KEY);
-        this.router.navigate(['/']);
     }
 
     getAuthToken(): string | null {
