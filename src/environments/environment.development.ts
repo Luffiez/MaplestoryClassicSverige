@@ -1,3 +1,4 @@
 export const environment = {
-    devMode: false
+    devMode: false,
+    discordRedirectUri: 'http://localhost:4200/auth/callback'
 };

@@ -1,3 +1,4 @@
 export const environment = {
-    devMode: false
+    devMode: false,
+    discordRedirectUri: 'https://luffiez.github.io/MaplestoryClassicSverige/auth/callback'
 };
