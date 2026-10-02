@@ -3,9 +3,9 @@
     <button type="button" class="mute-toggle" (click)="toggleMute()"
       [attr.aria-label]="isMuted() ? 'Unmute sound' : 'Mute sound'">
       @if (isMuted()) {
-        <mat-icon>volume_off</mat-icon>
+      <mat-icon>volume_off</mat-icon>
       } @else {
-        <mat-icon>volume_up</mat-icon>
+      <mat-icon>volume_up</mat-icon>
       }
     </button>
     <button *ngIf="!authService.isAuthenticated()" class="btn-discord"
@@ -23,8 +23,8 @@
       <div class="nav-right">
         <nav *ngIf="authService.isAuthenticated()">
           <ul class="nav-links">
-            <li><a routerLink="/" routerLinkActive="active" (click)="playButtonSfx()">Home</a></li>
-            <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Players</a></li>
+            <li><a routerLink="/" routerLinkActive="active" (click)="playButtonSfx()">Hem</a></li>
+            <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Spelare</a></li>
           </ul>
         </nav>
       </div>
@@ -36,20 +36,24 @@
       <div class="announcement-track">
         <div class="announcement-content">
           <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Check <a routerLink="/players"><em>Players</em></a> for the latest character updates.</span>
+          <span>Gå till <a routerLink="/players"><em>Spelare</em></a> för att se de senaste
+            karaktärsuppdateringarna.</span>
           @if (discordCommunicationsEnabled) {
-            <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank" rel="noopener noreferrer"><em>här</em></a>.</span>
+          <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"
+              rel="noopener noreferrer"><em>här</em></a>.</span>
           } @else {
-            <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
+          <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
           }
         </div>
         <div class="announcement-content" aria-hidden="true">
           <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Check <a routerLink="/players" tabindex="-1"><em>Players</em></a> for the latest character updates.</span>
+          <span>Check <a routerLink="/players" tabindex="-1"><em>Players</em></a> for the latest character
+            updates.</span>
           @if (discordCommunicationsEnabled) {
-            <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank" rel="noopener noreferrer" tabindex="-1"><em>här</em></a>.</span>
+          <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"
+              rel="noopener noreferrer" tabindex="-1"><em>här</em></a>.</span>
           } @else {
-            <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
+          <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
           }
         </div>
       </div>

@@ -37,6 +37,11 @@ p {
     line-height: 1.7;
 }
 
+.content-panel > app-leaderboard {
+    display: block;
+    margin-top: 2.5rem;
+}
+
 .btn {
     display: inline-block;
     width: fit-content;

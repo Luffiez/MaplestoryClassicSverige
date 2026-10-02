@@ -1,16 +1,16 @@
 <div class="players-container">
-    <h1>Players List</h1>
+    <h1>Spelarlista</h1>
 
     <div *ngIf="error()" class="error-message">
         {{ error() }}
     </div>
 
     <div *ngIf="isLoading()" class="loading">
-        Loading players...
+        Laddar spelare...
     </div>
 
     <div *ngIf="!isLoading() && players().length === 0 && !error()" class="no-data">
-        No players found.
+        Inga spelare hittades.
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">
@@ -29,17 +29,19 @@
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
                         <div class="character-item" *ngFor="let character of player.characters">
-                            <div class="character-image"
-                                *ngIf="character.characterImageUrl; else missingCharacterImage">
-                                <img [src]="character.characterImageUrl" [alt]="character.characterName" />
-                            </div>
-                            <ng-template #missingCharacterImage>
-                                <div class="character-image missing-image" aria-label="Missing character image">
-                                    Missing
+                            <div class="character-portrait">
+                                <div class="character-image"
+                                    *ngIf="character.characterImageUrl; else missingCharacterImage">
+                                    <img [src]="character.characterImageUrl" [alt]="character.characterName" />
                                 </div>
-                            </ng-template>
+                                <ng-template #missingCharacterImage>
+                                    <div class="character-image missing-image" aria-label="Missing character image">
+                                        Missing
+                                    </div>
+                                </ng-template>
+                                <h4 class="character-name">{{ character.characterName }}</h4>
+                            </div>
                             <div class="character-info">
-                                <h4>{{ character.characterName }}</h4>
                                 <div class="character-details">
                                     <span><strong>Level:</strong> {{ character.level }}</span>
                                     <span><strong>Job:</strong> {{ character.job }}</span>
