@@ -12,6 +12,8 @@ ng serve
 
 Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
 
+The development configuration runs in dev mode. Discord authorization is bypassed and player requests use the fixtures in `src/app/mocks/mock-users.ts`, so the backend does not need to be running. Production builds disable dev mode and use the real Discord and backend integrations.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

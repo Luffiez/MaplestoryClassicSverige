@@ -1,8 +1,10 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, tap } from 'rxjs';
-import { AuthToken, AuthUser } from '../../models/auth.model';
+import { Observable, of, tap } from 'rxjs';
+import { AuthUser } from '../../models/auth.model';
+import { environment } from '../../../environments/environment';
+import { MOCK_AUTH_USER } from '../../mocks/mock-users';
 
 @Injectable({
     providedIn: 'root'
@@ -22,7 +24,17 @@ export class AuthService {
         private http: HttpClient,
         private router: Router
     ) {
-        this.loadStoredAuth();
+        if (environment.devMode) {
+            this.useMockAuth();
+        } else {
+            this.loadStoredAuth();
+        }
+    }
+
+    private useMockAuth(): void {
+        this.authToken.set('local-development-token');
+        this.user.set(MOCK_AUTH_USER);
+        this.isAuthenticated.set(true);
     }
 
     private loadStoredAuth(): void {
@@ -34,6 +46,12 @@ export class AuthService {
     }
 
     loginWithDiscord(): void {
+        if (environment.devMode) {
+            this.useMockAuth();
+            this.router.navigate(['/home']);
+            return;
+        }
+
         const params = new URLSearchParams({
             client_id: this.DISCORD_CLIENT_ID,
             redirect_uri: this.REDIRECT_URI,
@@ -45,6 +63,11 @@ export class AuthService {
     }
 
     exchangeCodeForToken(code: string): Observable<{ token: string }> {
+        if (environment.devMode) {
+            this.useMockAuth();
+            return of({ token: this.authToken()! });
+        }
+
         return this.http.post<{ token: string }>(
             `${this.BACKEND_URL}/api/auth/discord`,
             { code, redirectUri: this.REDIRECT_URI }

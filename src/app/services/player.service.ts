@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of, throwError } from 'rxjs';
 import { User, PaginatedResponse } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
+import { environment } from '../../environments/environment';
+import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
 
 @Injectable({
     providedIn: 'root'
@@ -25,6 +27,17 @@ export class PlayerService {
     }
 
     getUsers(offset?: number, limit?: number): Observable<PaginatedResponse<User>> {
+        if (environment.devMode) {
+            const start = offset ?? 0;
+            const pageSize = limit ?? MOCK_USERS.length;
+            return of({
+                items: MOCK_USERS.slice(start, start + pageSize),
+                offset: start,
+                limit: pageSize,
+                totalCount: MOCK_USERS.length
+            });
+        }
+
         let url = this.apiUrl;
         const params = new URLSearchParams();
 
@@ -45,12 +58,23 @@ export class PlayerService {
     }
 
     getUser(discordUserId: string | number): Observable<User> {
+        if (environment.devMode) {
+            const user = MOCK_USERS.find(candidate => candidate.discordUserId === discordUserId.toString());
+            return user
+                ? of(user)
+                : throwError(() => new Error(`Mock user ${discordUserId} was not found.`));
+        }
+
         return this.http.get<User>(`${this.apiUrl}/${discordUserId}`, {
             headers: this.getHeaders()
         });
     }
 
     getCurrentUser(): Observable<User> {
+        if (environment.devMode) {
+            return of(MOCK_USERS.find(user => user.discordUserId === MOCK_AUTH_USER.id)!);
+        }
+
         return this.http.get<User>(`${this.apiUrl}/me`, {
             headers: this.getHeaders()
         });
