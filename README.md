@@ -38,6 +38,10 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
+## GitHub Pages deployment
+
+Pushing to `master` builds the production site and publishes the generated files to the `gh-pages` branch. Configure GitHub Pages to deploy from the `gh-pages` branch, using the root folder.
+
 ## Running unit tests
 
 To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:

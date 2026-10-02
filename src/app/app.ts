@@ -15,8 +15,8 @@ export class App {
   authService = inject(AuthService);
   protected readonly title = signal('maplestory-classic-web');
   protected readonly discordCommunicationsEnabled = !environment.devMode;
-  private readonly bgm = new Audio('/sleepywood-bg.mp3');
-  private readonly sfx = new Audio('/maplestory-click.mp3');
+  private readonly bgm = new Audio('sleepywood-bg.mp3');
+  private readonly sfx = new Audio('maplestory-click.mp3');
   isMuted = signal(false);
   isLogoHovered = signal(false);
 

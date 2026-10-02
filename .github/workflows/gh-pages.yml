@@ -1,23 +1,25 @@
 name: Deploy to GitHub Pages
+
 on:
   push:
     branches:
-      - main
+      - master
+
+permissions:
+  contents: write
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-      env:
-        # For a project page set explicitly to the repo name below.
-        # If this is a user/org site, change this to "/".
-        BASE_HREF: /MaplestoryClassicSverige/
+    env:
+      BASE_HREF: /MaplestoryClassicSverige/
     steps:
       - uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: '20'
 
       - name: Install dependencies
         run: npm ci
@@ -33,5 +35,5 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          # The Angular build outputs the production-ready files in the `browser` subfolder.
           publish_dir: ./dist/maplestory-classic-web/browser
+          publish_branch: gh-pages

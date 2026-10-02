@@ -130,7 +130,7 @@
     justify-content: flex-end;
     align-items: center;
     gap: 1rem;
-    background-image: url('/header-banner.png');
+    background-image: url('../../public/header-banner.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

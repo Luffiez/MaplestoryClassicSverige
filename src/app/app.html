@@ -11,7 +11,7 @@
     <button *ngIf="!authService.isAuthenticated()" class="btn-discord"
       (click)="playButtonSfx(); authService.loginWithDiscord()">
       <span>Logga in</span>
-      <img class="discord-mark" src="/discord-logo-white.png" alt="Discord">
+      <img class="discord-mark" src="discord-logo-white.png" alt="Discord">
     </button>
     <button *ngIf="authService.isAuthenticated()" class="logout" (click)="playButtonSfx(); authService.logout()">
       Logga ut <mat-icon>exit_to_app</mat-icon>
