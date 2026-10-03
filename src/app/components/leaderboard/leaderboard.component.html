@@ -1,8 +1,8 @@
 <section class="leaderboard" aria-labelledby="leaderboard-title">
     <div class="section-heading">
-        <h2 id="leaderboard-title">Topplistan</h2>
+        <h2 id="leaderboard-title">Svenska topplistan</h2>
     </div>
-
+    <br>
     @if (isLoading()) {
     <p class="status-message" role="status">Letar efter Maple Worlds starkaste hjältar...</p>
     } @else if (error(); as loadError) {
@@ -20,7 +20,8 @@
             <article class="leader-card">
                 <div class="player-banner">
                     <span class="rank-trophy" aria-hidden="true">
-                        <mat-icon>emoji_events</mat-icon>
+                        <img [ngSrc]="index === 0 ? '/event-trophy-gold.png' : index === 1 ? '/event-trophy-silver.png' : '/event-trophy-bronze.png'"
+                            width="32" height="32" alt="" />
                     </span>
                     <span class="sr-only">{{ index + 1 }}:e plats</span>
                     <h1 class="discord-name">{{ entry.player.discordUsername || entry.player.discordUserId }}</h1>

@@ -77,5 +77,28 @@ export const MOCK_USERS: User[] = [
         discordUsername: 'SleepywoodTester',
         createdAt: '2026-03-18T16:20:00Z',
         characters: []
-    }
+    },
+    {
+        id: 4,
+        discordUserId: '100000000000000002',
+        discordUsername: 'HenesisLocal',
+        createdAt: '2026-02-03T11:00:00Z',
+        characters: [
+            {
+                id: 3,
+                discordUserId: '100000000000000002',
+                isPrimary: true,
+                characterName: 'Wizeard',
+                world: 'Bera',
+                level: 68,
+                class: 'Magician',
+                job: 'Wizard (Fire/Poison)',
+                externalId: 'mock-character-4',
+                lastSyncedAt: '2026-10-02T08:10:00Z',
+                rank: 492423,
+                characterImageUrl: null,
+                cacheLastUpdatedAt: '2026-10-02T08:10:00Z'
+            }
+        ]
+    },
 ];

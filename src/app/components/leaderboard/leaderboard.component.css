@@ -45,48 +45,46 @@ h2 {
 .podium {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-areas: "silver gold bronze";
     align-items: end;
     gap: 1rem;
     max-width: 790px;
     margin: 0 auto;
     padding: 0;
     list-style: none;
+    --podium-border: #5a4124;
+    --podium-shadow: #967143;
 }
 
 .podium-slot {
     min-width: 0;
 }
 
-.leader-card {
-    overflow: hidden;
-    border: 3px solid var(--medal-dark);
-    background: var(--medal-paper);
-    box-shadow: 0 4px 0 var(--medal-shadow), inset 0 0 0 2px rgba(255, 255, 255, 0.72);
-}
-
 .first-place {
-    --medal: #f2bd4c;
-    --medal-dark: #9a6416;
-    --medal-shadow: #805113;
-    --medal-paper: #fff0bd;
+    grid-area: gold;
 }
 
 .second-place {
-    --medal: #cbd4db;
-    --medal-dark: #64717d;
-    --medal-shadow: #4d5b66;
-    --medal-paper: #edf1f1;
+    grid-area: silver;
 }
 
 .third-place {
-    --medal: #d99a64;
-    --medal-dark: #824b2c;
-    --medal-shadow: #683b25;
-    --medal-paper: #f5dfca;
+    grid-area: bronze;
+}
+
+.leader-card {
+    overflow: hidden;
+    border: 3px solid var(--podium-border);
+    background: #fff8e6;
+    box-shadow: 0 4px 0 var(--podium-shadow), inset 0 0 0 2px rgba(255, 255, 255, 0.72);
 }
 
 .first-place .leader-card {
-    transform: translateY(-0.65rem);
+    transform: translateY(-1.25rem);
+}
+
+.second-place .leader-card {
+    transform: translateY(-0.5rem);
 }
 
 .player-banner {
@@ -94,8 +92,8 @@ h2 {
     align-items: center;
     gap: 0.5rem;
     padding: 0rem 0.2rem 0rem 0.2rem;
-    border-bottom: 3px solid var(--medal-dark);
-    background: linear-gradient(180deg, color-mix(in srgb, var(--medal) 84%, white), var(--medal));
+    border-bottom: 3px solid var(--podium-border);
+    background: #fff8e6;
     color: #352313;
 }
 
@@ -105,14 +103,13 @@ h2 {
     width: 1.8rem;
     height: 1.8rem;
     place-items: center;
-    color: var(--medal-dark);
     filter: drop-shadow(1px 1px rgba(255, 255, 255, 0.8));
 }
 
-.rank-trophy mat-icon {
+.rank-trophy img {
+    display: block;
     width: 1.8rem;
     height: 1.8rem;
-    font-size: 1.8rem;
 }
 
 .discord-name {
@@ -131,7 +128,7 @@ h2 {
     overflow: hidden;
     place-items: end center;
     padding-bottom: 1rem;
-    border-bottom: 2px solid var(--medal-dark);
+    border-bottom: 2px solid var(--podium-border);
     background: linear-gradient(180deg, #a8d8df 0%, #d9e8bb 67%, #84aa58 68%, #577642 100%);
 }
 
@@ -202,7 +199,7 @@ h2 {
 .level-badge {
     flex: 0 0 auto;
     padding: 0.3rem 0.45rem;
-    border: 2px solid var(--medal-dark);
+    border: 2px solid var(--podium-border);
     background: #382d20;
     color: #fff4cf;
     font-size: 0.75rem;
@@ -255,11 +252,16 @@ h2 {
 
     .podium {
         grid-template-columns: 1fr;
+        grid-template-areas:
+            "gold"
+            "silver"
+            "bronze";
         gap: 0.75rem;
         max-width: 360px;
     }
 
-    .first-place .leader-card {
+    .first-place .leader-card,
+    .second-place .leader-card {
         transform: none;
     }
 

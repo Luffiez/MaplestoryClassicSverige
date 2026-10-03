@@ -1,5 +1,5 @@
 export const environment = {
-    devMode: false,
+    devMode: WebTransportDatagramDuplexStream,
     discordRedirectUri: 'http://localhost:4200/auth/callback',
     backendUrl: 'http://localhost:5184'
 };

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { MatIconModule } from '@angular/material/icon';
+import { NgOptimizedImage } from '@angular/common';
 import { Character, User } from '../../models/player.model';
 import { PlayerService } from '../../services/player.service';
 
@@ -11,7 +11,7 @@ interface LeaderboardEntry {
 @Component({
     selector: 'app-leaderboard',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [MatIconModule],
+    imports: [NgOptimizedImage],
     templateUrl: './leaderboard.component.html',
     styleUrl: './leaderboard.component.css'
 })
