@@ -33,6 +33,11 @@ export class BotCommandsComponent {
             name: '/leaderboards',
             description: 'Visa varje Discord-användares karaktär med högst nivå bland de synkade karaktärerna.',
             details: 'Kör kommandot i Discord för att visa topplistan baserad på användarnas högsta synkade karaktärsnivå.'
+        },
+        {
+            name: '/setprimary {characterName}',
+            description: 'Ställ in en av dina synkade karaktärer som primär. Servernamnet berikas med klass och level från den primära karaktären.',
+            details: 'Använd kommandot i Discord när du vill ställa in en av dina synkade karaktärer som primär.'
         }
     ];
 }
