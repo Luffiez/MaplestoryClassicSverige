@@ -28,7 +28,7 @@ export const MOCK_USERS: User[] = [
                 externalId: 'mock-character-1',
                 lastSyncedAt: '2026-10-02T09:15:00Z',
                 rank: 184,
-                characterImageUrl: null,
+                characterImageUrl: "/mock-1.png",
                 cacheLastUpdatedAt: '2026-10-02T09:15:00Z'
             },
             {
@@ -43,7 +43,7 @@ export const MOCK_USERS: User[] = [
                 externalId: 'mock-character-2',
                 lastSyncedAt: '2026-10-01T20:45:00Z',
                 rank: 1284,
-                characterImageUrl: null,
+                characterImageUrl: "/mock-2.png",
                 cacheLastUpdatedAt: '2026-10-01T20:45:00Z'
             }
         ]
@@ -66,7 +66,7 @@ export const MOCK_USERS: User[] = [
                 externalId: 'mock-character-3',
                 lastSyncedAt: '2026-10-02T08:10:00Z',
                 rank: 492,
-                characterImageUrl: null,
+                characterImageUrl: "/mock-4.png",
                 cacheLastUpdatedAt: '2026-10-02T08:10:00Z'
             }
         ]
@@ -96,7 +96,7 @@ export const MOCK_USERS: User[] = [
                 externalId: 'mock-character-4',
                 lastSyncedAt: '2026-10-02T08:10:00Z',
                 rank: 492423,
-                characterImageUrl: null,
+                characterImageUrl: "/mock-3.png",
                 cacheLastUpdatedAt: '2026-10-02T08:10:00Z'
             }
         ]

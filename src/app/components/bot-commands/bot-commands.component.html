@@ -1,0 +1,29 @@
+<main class="commands-page" aria-labelledby="commands-title">
+    <header class="section-heading">
+        <p class="eyebrow">Discord-guide</p>
+        <h1 id="commands-title">Botkommandon</h1>
+        <p class="section-description">
+            Här hittar du kommandona som hjälper dig att synka karaktärer och se spelarinformation.
+            Skriv kommandot i en Discord-kanal där boten är tillgänglig.
+        </p>
+    </header>
+
+    <ul class="command-list" aria-label="Discord-botens kommandon">
+        @for (command of commands; track command.name) {
+        <li>
+            <article class="command-card">
+                <div class="command-heading">
+                    <code>{{ command.name }}</code>
+                    <p>{{ command.description }}</p>
+                </div>
+                <dl class="command-details">
+                    <div>
+                        <dt>Så fungerar det</dt>
+                        <dd>{{ command.details }}</dd>
+                    </div>
+                </dl>
+            </article>
+        </li>
+        }
+    </ul>
+</main>

@@ -9,6 +9,11 @@ export const routes: Routes = [
     { path: 'auth/callback', component: AuthCallbackComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard] },
     { path: 'players', component: PlayersListComponent, canActivate: [authGuard] },
+    {
+        path: 'botkommandon',
+        loadComponent: () => import('./components/bot-commands/bot-commands.component').then(component => component.BotCommandsComponent),
+        canActivate: [authGuard]
+    },
     { path: '', component: LandingPageComponent },
     { path: '**', redirectTo: '' }
 ];

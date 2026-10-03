@@ -2,30 +2,26 @@
     <div class="section-heading">
         <h2 id="leaderboard-title">Svenska topplistan</h2>
     </div>
-    <br>
     @if (isLoading()) {
     <p class="status-message" role="status">Letar efter Maple Worlds starkaste hjältar...</p>
-    } @else if (error(); as loadError) {
+    }
+    @if (error(); as loadError) {
     <div class="error-state" role="alert">
         <p>{{ loadError }}</p>
         <button type="button" (click)="loadPlayers()">Försök igen</button>
     </div>
-    } @else if (leaders().length === 0) {
+    }
+    @if (!isLoading() && !error() && leaders().length === 0) {
     <p class="status-message">Inga karaktärer har hittats ännu.</p>
-    } @else {
+    }
     <ol class="podium" aria-label="Topplista efter karaktärsnivå">
-        @for (entry of leaders(); track entry.player.discordUserId; let index = $index) {
+        @for (index of podiumPlaces; track index) {
+        @let entry = leaders()[index];
         <li class="podium-slot" [class.first-place]="index === 0" [class.second-place]="index === 1"
             [class.third-place]="index === 2">
-            <article class="leader-card">
-                <div class="player-banner">
-                    <span class="rank-trophy" aria-hidden="true">
-                        <img [ngSrc]="index === 0 ? '/event-trophy-gold.png' : index === 1 ? '/event-trophy-silver.png' : '/event-trophy-bronze.png'"
-                            width="32" height="32" alt="" />
-                    </span>
-                    <span class="sr-only">{{ index + 1 }}:e plats</span>
-                    <h1 class="discord-name">{{ entry.player.discordUsername || entry.player.discordUserId }}</h1>
-                </div>
+            <article class="podium-scene">
+                <span class="sr-only">{{ index + 1 }}:e plats</span>
+                @if (entry) {
                 <div class="character-stage">
                     @if (entry.character.characterImageUrl) {
                     <img class="character-image" [src]="entry.character.characterImageUrl"
@@ -35,16 +31,18 @@
                         <span>{{ entry.character.characterName.slice(0, 1) }}</span>
                     </div>
                     }
-                    <h3 class="character-name">{{ entry.character.characterName }}</h3>
                 </div>
-
-                <!-- <div class="character-details">
-                    <span class="character-job">{{ entry.character.job }}</span>
-                    <span class="level-badge">LV. {{ entry.character.level }}</span>
-                </div> -->
+                <div class="player-banner">
+                    <h3 class="character-name">{{ entry.character.characterName }}</h3>
+                    <span class="level-badge">Lv {{ entry.character.level }}</span>
+                </div>
+                }
+                <div class="podium-base" aria-hidden="true">
+                    <img [ngSrc]="index === 0 ? '/event-trophy-gold.png' : index === 1 ? '/event-trophy-silver.png' : '/event-trophy-bronze.png'"
+                        width="64" height="64" alt="" />
+                </div>
             </article>
         </li>
         }
     </ol>
-    }
 </section>

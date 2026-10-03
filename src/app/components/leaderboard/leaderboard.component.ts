@@ -19,6 +19,7 @@ export class LeaderboardComponent implements OnInit {
     private readonly playerService = inject(PlayerService);
     private readonly pageSize = 100;
 
+    protected readonly podiumPlaces = [0, 1, 2];
     protected readonly leaders = signal<LeaderboardEntry[]>([]);
     protected readonly isLoading = signal(true);
     protected readonly error = signal<string | null>(null);
