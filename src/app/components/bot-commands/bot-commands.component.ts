@@ -39,5 +39,24 @@ export class BotCommandsComponent {
             description: 'Ställ in en av dina synkade karaktärer som primär. Servernamnet berikas med klass och level från den primära karaktären.',
             details: 'Använd kommandot i Discord när du vill ställa in en av dina synkade karaktärer som primär.'
         }
+
+        ,
+        {
+            name: '/joinparty {mapName}',
+            description: 'Markera vilken karta du tränar på, fler kanske vill haka på?',
+            details: 'Använd kommandot i Discord för att ange vilken karta du för närvarande tränar på.'
+        }
+        ,
+        {
+            name: '/leaveparty',
+            description: 'Lämna den aktuella träningsgruppen på kartan.',
+            details: 'Använd kommandot i Discord när du vill lämna den aktuella träningsgruppen på kartan.'
+        }
+        ,
+        {
+            name: '/partylist',
+            description: 'Visa listan över alla kartor som spelare för närvarande tränar på.',
+            details: 'Använd kommandot i Discord för att se vilka kartor spelare är aktiva på.'
+        }
     ];
 }
