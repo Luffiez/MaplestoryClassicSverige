@@ -28,7 +28,7 @@
                     <li class="member-item" *ngFor="let member of map.members">
                         <span class="member-character">{{ member.characterName }}</span>
                         <a class="member-user" routerLink="/players" [queryParams]="{ user: member.discordUserId }"
-                            title="Visa spelarens profil">@{{ member.discordUsername || member.discordUserId }}</a>
+                            title="Visa medlemmens profil">@{{ member.discordUsername || member.discordUserId }}</a>
                     </li>
                 </ul>
             </div>

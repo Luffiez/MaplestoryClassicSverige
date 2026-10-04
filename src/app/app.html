@@ -19,24 +19,27 @@
   </div>
 
   <header class="navbar">
-    <div class="nav-container"></div>
-    <nav class="nav-bar" *ngIf="authService.isAuthenticated()">
-      <ul class="nav-links">
-        <li><a routerLink="/" routerLinkActive="active"
-            (click)="playButtonSfx()">Hem</a></li>
-        <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Spelare</a></li>
-        <li><a routerLink="/party" routerLinkActive="active" (click)="playButtonSfx()">Party</a></li>
-        <li><a routerLink="/botkommandon" routerLinkActive="active" ariaCurrentWhenActive="page"
-            (click)="playButtonSfx()">Discord-guide</a></li>
-      </ul>
-    </nav>
+    <div class="nav-container">
+      <div class="nav-right">
+        <nav *ngIf="authService.isAuthenticated()">
+          <ul class="nav-links">
+            <li><a routerLink="/" routerLinkActive="active" (click)="playButtonSfx()">Hem</a></li>
+            <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Medlemmar</a></li>
+            <li><a routerLink="/party" routerLinkActive="active" (click)="playButtonSfx()">Party</a></li>
+            <li><a routerLink="/botkommandon" routerLinkActive="active" ariaCurrentWhenActive="page"
+                (click)="playButtonSfx()">Kommandon</a></li>
+          </ul>
+        </nav>
+      </div>
+    </div>
   </header>
+
   <div class="announcement-banner">
     <div class="announcement-viewport" role="status" aria-label="Community announcement">
       <div class="announcement-track">
         <div class="announcement-content">
           <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Gå till <a routerLink="/players"><em>Spelare</em></a> för att se de senaste
+          <span>Gå till <a routerLink="/players"><em>Medlemmar</em></a> för att se de senaste
             karaktärsuppdateringarna.</span>
           @if (discordCommunicationsEnabled) {
           <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"
@@ -47,7 +50,7 @@
         </div>
         <div class="announcement-content" aria-hidden="true">
           <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Gå till <a routerLink="/players"><em>Spelare</em></a> för att se de senaste
+          <span>Gå till <a routerLink="/players"><em>Medlemmar</em></a> för att se de senaste
             karaktärsuppdateringarna.</span>
           @if (discordCommunicationsEnabled) {
           <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"

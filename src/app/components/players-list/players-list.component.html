@@ -1,18 +1,18 @@
 <div class="players-container">
-    <h1>Spelarlista</h1>
+    <h1>Medlemmar</h1>
 
-    <a *ngIf="selectedUserId()" class="show-all-link" routerLink="/players">? Visa alla spelare</a>
+    <a *ngIf="selectedUserId()" class="show-all-link" routerLink="/players">← Visa alla medlemmar</a>
 
     <div *ngIf="error()" class="error-message">
         {{ error() }}
     </div>
 
     <div *ngIf="isLoading()" class="loading">
-        Laddar spelare...
+        Laddar medlemmar...
     </div>
 
     <div *ngIf="!isLoading() && players().length === 0 && !error()" class="no-data">
-        Inga spelare hittades.
+        Inga medlemmar hittades.
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">

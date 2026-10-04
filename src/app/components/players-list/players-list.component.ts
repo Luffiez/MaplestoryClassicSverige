@@ -43,7 +43,7 @@ export class PlayersListComponent implements OnInit {
                 },
                 error: (err) => {
                     this.players.set([]);
-                    this.error.set('Kunde inte ladda spelaren. ' + (err.message || ''));
+                    this.error.set('Kunde inte ladda medlemmen. ' + (err.message || ''));
                     this.isLoading.set(false);
                 }
             });
