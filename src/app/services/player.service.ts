@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, of, throwError } from 'rxjs';
-import { User, PaginatedResponse } from '../models/player.model';
+import { User, PaginatedResponse, PartyListResponse } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
 import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
@@ -66,6 +66,20 @@ export class PlayerService {
         }
 
         return this.http.get<User>(`${this.apiUrl}/${discordUserId}`, {
+            headers: this.getHeaders()
+        });
+    }
+
+    getParties(): Observable<PartyListResponse> {
+        if (environment.devMode) {
+            const maps = [
+                { mapName: 'Sleepywood', members: MOCK_USERS.slice(0, 2).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) },
+                { mapName: 'Henesys Hunting Ground', members: MOCK_USERS.slice(2, 3).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) }
+            ];
+            return of({ maps, totalMaps: maps.length, totalMembers: maps.reduce((sum, map) => sum + map.members.length, 0) });
+        }
+
+        return this.http.get<PartyListResponse>(`${environment.backendUrl}/api/parties`, {
             headers: this.getHeaders()
         });
     }

@@ -1,12 +1,13 @@
 import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 import { PlayerService } from '../../services/player.service';
 import { User } from '../../models/player.model';
 
 @Component({
     selector: 'app-players-list',
     standalone: true,
-    imports: [CommonModule],
+    imports: [CommonModule, RouterLink],
     templateUrl: './players-list.component.html',
     styleUrl: './players-list.component.css'
 })
@@ -15,17 +16,40 @@ export class PlayersListComponent implements OnInit {
     totalCount = signal(0);
     isLoading = signal(true);
     error = signal<string | null>(null);
+    selectedUserId = signal<string | null>(null);
     currentOffset = signal(0);
     pageSize = 25;
     hasMorePlayers = computed(() => this.currentOffset() + this.players().length < this.totalCount());
 
-    constructor(private playerService: PlayerService) { }
+    constructor(private playerService: PlayerService, private route: ActivatedRoute) { }
 
     ngOnInit(): void {
-        this.loadPlayers();
+        this.route.queryParamMap.subscribe(params => {
+            this.selectedUserId.set(params.get('user'));
+            this.loadPlayers();
+        });
     }
 
     loadPlayers(): void {
+        const selectedId = this.selectedUserId();
+        if (selectedId) {
+            this.isLoading.set(true);
+            this.error.set(null);
+            this.playerService.getUser(selectedId).subscribe({
+                next: (user) => {
+                    this.players.set([user]);
+                    this.totalCount.set(1);
+                    this.isLoading.set(false);
+                },
+                error: (err) => {
+                    this.players.set([]);
+                    this.error.set('Kunde inte ladda spelaren. ' + (err.message || ''));
+                    this.isLoading.set(false);
+                }
+            });
+            return;
+        }
+
         this.isLoading.set(true);
         this.error.set(null);
 

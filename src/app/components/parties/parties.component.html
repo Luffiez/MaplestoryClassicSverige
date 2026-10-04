@@ -1,0 +1,37 @@
+<div class="parties-container">
+    <h1>Party</h1>
+
+    <div *ngIf="error()" class="error-message">
+        {{ error() }}
+    </div>
+
+    <div *ngIf="isLoading()" class="loading">
+        Laddar party...
+    </div>
+
+    <div *ngIf="!isLoading() && !error() && (parties()?.maps?.length ?? 0) === 0" class="no-data">
+        Ingen tränar på någon karta just nu.
+    </div>
+
+    <div *ngIf="!isLoading() && (parties()?.maps?.length ?? 0) > 0" class="parties-list">
+        <details class="party-card" *ngFor="let map of parties()!.maps" open>
+            <summary class="party-header">
+                <span class="party-summary-main">
+                    <span class="chevron" aria-hidden="true">▼</span>
+                    <span class="party-name">{{ map.mapName }}</span>
+                </span>
+                <span class="party-member-count">{{ map.members.length }} karaktär(er)</span>
+            </summary>
+
+            <div class="party-body">
+                <ul class="member-list">
+                    <li class="member-item" *ngFor="let member of map.members">
+                        <span class="member-character">{{ member.characterName }}</span>
+                        <a class="member-user" routerLink="/players" [queryParams]="{ user: member.discordUserId }"
+                            title="Visa spelarens profil">@{{ member.discordUsername || member.discordUserId }}</a>
+                    </li>
+                </ul>
+            </div>
+        </details>
+    </div>
+</div>

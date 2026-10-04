@@ -1,6 +1,8 @@
 <div class="players-container">
     <h1>Spelarlista</h1>
 
+    <a *ngIf="selectedUserId()" class="show-all-link" routerLink="/players">? Visa alla spelare</a>
+
     <div *ngIf="error()" class="error-message">
         {{ error() }}
     </div>
@@ -14,7 +16,7 @@
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">
-        <details class="player-card" *ngFor="let player of players()">
+        <details class="player-card" *ngFor="let player of players()" [open]="selectedUserId() !== null">
             <summary class="player-header">
                 <span class="player-summary-main">
                     <span class="chevron" aria-hidden="true">▼</span>
@@ -26,6 +28,8 @@
             </summary>
 
             <div class="player-body">
+                <a class="discord-link" [href]="'https://discord.com/users/' + player.discordUserId" target="_blank"
+                    rel="noopener noreferrer">Öppna discord profil ↗</a>
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
                         <div class="character-item" *ngFor="let character of player.characters">
@@ -63,7 +67,7 @@
         </details>
     </div>
 
-    <div class="pagination" *ngIf="!isLoading() && players().length > 0">
+    <div class="pagination" *ngIf="!isLoading() && players().length > 0 && !selectedUserId()">
         <button (click)="previousPage()" [disabled]="currentOffset() === 0">Previous</button>
         <span>Page starting at offset: {{ currentOffset() }}</span>
         <button (click)="nextPage()" [disabled]="!hasMorePlayers()">Next</button>

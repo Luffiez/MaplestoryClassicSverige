@@ -305,3 +305,17 @@ h1 {
         flex-basis: 72px;
     }
 }
+.discord-link,
+.show-all-link {
+    display: inline-block;
+    margin-bottom: 12px;
+    color: #3b6db0;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: var(--clickable-cursor);
+}
+
+.discord-link:hover,
+.show-all-link:hover {
+    text-decoration: underline;
+}

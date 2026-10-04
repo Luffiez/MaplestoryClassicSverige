@@ -28,3 +28,21 @@ export interface PaginatedResponse<T> {
     limit: number;
     totalCount: number;
 }
+
+export interface PartyMember {
+    discordUserId: string;
+    discordUsername: string | null;
+    characterName: string;
+    isPrimaryCharacter: boolean;
+}
+
+export interface PartyMap {
+    mapName: string;
+    members: PartyMember[];
+}
+
+export interface PartyListResponse {
+    maps: PartyMap[];
+    totalMaps: number;
+    totalMembers: number;
+}
