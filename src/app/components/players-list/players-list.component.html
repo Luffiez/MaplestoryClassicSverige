@@ -1,7 +1,14 @@
 <div class="players-container">
     <h1>Medlemmar</h1>
 
-    <a *ngIf="selectedUserId()" class="show-all-link" routerLink="/players">← Visa alla medlemmar</a>
+    <div class="search-bar">
+        <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
+            aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
+    </div>
+
+    <div *ngIf="presenceError()" class="presence-error" role="status" aria-live="polite">
+        Närvarostatus kunde inte hämtas. Status visas som okänd tills anslutningen fungerar igen.
+    </div>
 
     <div *ngIf="error()" class="error-message">
         {{ error() }}
@@ -16,14 +23,22 @@
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">
-        <details class="player-card" *ngFor="let player of players()" [open]="selectedUserId() !== null">
+        <details class="player-card" *ngFor="let player of players()" [open]="searchQuery().trim() !== ''">
             <summary class="player-header">
                 <span class="player-summary-main">
                     <span class="chevron" aria-hidden="true">▼</span>
+                    <span class="presence-indicator" [class.online]="onlineUserIds()?.has(player.discordUserId)"
+                        [class.offline]="onlineUserIds() !== null && !onlineUserIds()?.has(player.discordUserId)"
+                        [class.unknown]="onlineUserIds() === null" role="img"
+                        [attr.aria-label]="getPresenceLabel(player.discordUserId)"
+                        [title]="getPresenceLabel(player.discordUserId)"></span>
                     <span class="player-name">{{ player.discordUsername || player.discordUserId }}</span>
+                    <img *ngIf="playerTrophies().get(player.id) as trophy" class="player-trophy" [ngSrc]="trophy.src"
+                        [alt]="trophy.alt" width="32" height="32" />
                 </span>
+
                 <span class="player-character-count">
-                    Member since: {{ player.createdAt | date: 'short' }}
+                    Medlem sedan: {{ player.createdAt | date: 'short' }}
                 </span>
             </summary>
 
@@ -50,7 +65,7 @@
                                     <span><strong>Level:</strong> {{ character.level }}</span>
                                     <span><strong>Job:</strong> {{ character.job }}</span>
                                     <span *ngIf="character.rank"><strong>Rank:</strong> {{ character.rank }}</span>
-                                    <span><strong>Last Synced:</strong> {{ character.lastSyncedAt | date:
+                                    <span><strong>Senast synkad:</strong> {{ character.lastSyncedAt | date:
                                         'short'}}</span>
                                 </div>
                             </div>
@@ -61,13 +76,13 @@
 
 
                 <div class="no-characters" *ngIf="player.characters.length === 0">
-                    No characters found for this player.
+                    Inga karaktärer hittades för denna medlem.
                 </div>
             </div>
         </details>
     </div>
 
-    <div class="pagination" *ngIf="!isLoading() && players().length > 0 && !selectedUserId()">
+    <div class="pagination" *ngIf="!isLoading() && players().length > 0">
         <button (click)="previousPage()" [disabled]="currentOffset() === 0">Previous</button>
         <span>Page starting at offset: {{ currentOffset() }}</span>
         <button (click)="nextPage()" [disabled]="!hasMorePlayers()">Next</button>

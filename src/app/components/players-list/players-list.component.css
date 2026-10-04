@@ -21,6 +21,12 @@ h1 {
     margin-bottom: 20px;
 }
 
+.presence-error {
+    margin: 0 0 12px;
+    color: #604d25;
+    font-size: 13px;
+}
+
 .loading {
     text-align: center;
     padding: 40px;
@@ -88,6 +94,27 @@ h1 {
     transition: transform 0.2s ease;
 }
 
+.presence-indicator {
+    display: inline-block;
+    flex: 0 0 10px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+}
+
+.presence-indicator.online {
+    background-color: #16853b;
+}
+
+.presence-indicator.offline {
+    background-color: #c62828;
+}
+
+.presence-indicator.unknown {
+    background-color: #777;
+}
+
 .player-card[open] .chevron {
     transform: rotate(180deg);
 }
@@ -98,6 +125,15 @@ h1 {
     font-weight: 700;
     text-align: left;
     flex: 1;
+}
+
+.player-trophy {
+    display: block;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    image-rendering: pixelated;
 }
 
 .player-character-count {
@@ -305,8 +341,8 @@ h1 {
         flex-basis: 72px;
     }
 }
-.discord-link,
-.show-all-link {
+
+.discord-link {
     display: inline-block;
     margin-bottom: 12px;
     color: #3b6db0;
@@ -315,7 +351,20 @@ h1 {
     cursor: var(--clickable-cursor);
 }
 
-.discord-link:hover,
-.show-all-link:hover {
+.discord-link:hover {
     text-decoration: underline;
+}
+
+.search-bar {
+    margin-bottom: 16px;
+}
+
+.search-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 12px;
+    border: 2px solid #4d3b2a;
+    background: #fffdf7;
+    color: #333;
+    font-size: 15px;
 }

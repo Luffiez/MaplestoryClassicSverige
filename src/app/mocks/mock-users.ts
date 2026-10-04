@@ -81,7 +81,7 @@ export const MOCK_USERS: User[] = [
     {
         id: 4,
         discordUserId: '100000000000000002',
-        discordUsername: 'HenesisLocal',
+        discordUsername: 'EliniaLocal',
         createdAt: '2026-02-03T11:00:00Z',
         characters: [
             {

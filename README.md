@@ -14,6 +14,8 @@ Once the server is running, open your browser and navigate to `http://localhost:
 
 The development configuration runs in dev mode. Discord authorization is bypassed and player requests use the fixtures in `src/app/mocks/mock-users.ts`, so the backend does not need to be running. Production builds disable dev mode and use the real Discord and backend integrations.
 
+In production, member presence is refreshed every 30 seconds and members are shown as online for up to two minutes after their latest authenticated heartbeat.
+
 ## Code scaffolding
 
 Angular CLI includes powerful code scaffolding tools. To generate a new component, run:

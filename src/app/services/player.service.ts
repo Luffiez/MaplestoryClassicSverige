@@ -57,6 +57,16 @@ export class PlayerService {
         });
     }
 
+    getOnlineUserIds(): Observable<string[]> {
+        if (environment.devMode) {
+            return of([MOCK_AUTH_USER.id]);
+        }
+
+        return this.http.get<string[]>(`${this.apiUrl}/online`, {
+            headers: this.getHeaders()
+        });
+    }
+
     getUser(discordUserId: string | number): Observable<User> {
         if (environment.devMode) {
             const user = MOCK_USERS.find(candidate => candidate.discordUserId === discordUserId.toString());

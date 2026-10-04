@@ -15,6 +15,7 @@ export class AuthService {
     private readonly DISCORD_AUTH_URL = 'https://discord.com/api/oauth2/authorize';
     private readonly BACKEND_URL = environment.backendUrl;
     private readonly TOKEN_KEY = 'discord_auth_token';
+    private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
 
     isAuthenticated = signal(false);
     user = signal<AuthUser | null>(null);
@@ -50,8 +51,28 @@ export class AuthService {
         this.http.get<AuthUser>(`${this.BACKEND_URL}/api/auth/me`, {
             headers: this.getAuthHeader()
         }).subscribe({
-            next: user => this.user.set(user),
+            next: user => {
+                this.user.set(user);
+                this.startPresenceHeartbeat();
+            },
             error: () => this.clearAuth()
+        });
+    }
+
+    private startPresenceHeartbeat(): void {
+        if (environment.devMode || this.heartbeatTimer !== null) {
+            return;
+        }
+
+        this.sendPresenceHeartbeat();
+        this.heartbeatTimer = setInterval(() => this.sendPresenceHeartbeat(), 30_000);
+    }
+
+    private sendPresenceHeartbeat(): void {
+        this.http.post<void>(`${this.BACKEND_URL}/api/users/me/heartbeat`, null, {
+            headers: this.getAuthHeader()
+        }).subscribe({
+            error: error => console.error('Could not update online presence.', error)
         });
     }
 
@@ -97,6 +118,10 @@ export class AuthService {
     }
 
     private clearAuth(): void {
+        if (this.heartbeatTimer !== null) {
+            clearInterval(this.heartbeatTimer);
+            this.heartbeatTimer = null;
+        }
         this.authToken.set(null);
         this.user.set(null);
         this.isAuthenticated.set(false);
