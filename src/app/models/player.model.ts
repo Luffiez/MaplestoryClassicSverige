@@ -36,8 +36,15 @@ export interface PartyMember {
     isPrimaryCharacter: boolean;
 }
 
+export interface PartyMonster {
+    name: string;
+    level: number | null;
+    iconUrl: string | null;
+}
+
 export interface PartyMap {
     mapName: string;
+    monsters: PartyMonster[];
     members: PartyMember[];
 }
 

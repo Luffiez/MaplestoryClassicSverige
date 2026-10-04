@@ -83,8 +83,8 @@ export class PlayerService {
     getParties(): Observable<PartyListResponse> {
         if (environment.devMode) {
             const maps = [
-                { mapName: 'Sleepywood', members: MOCK_USERS.slice(0, 2).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) },
-                { mapName: 'Henesys Hunting Ground', members: MOCK_USERS.slice(2, 3).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) }
+                { mapName: 'Sleepywood', monsters: [{ name: 'Zombie Mushroom', level: 24, iconUrl: 'https://meowdb.com/msclassic/monsters/sprites/mob_21.png' }, { name: 'Horny Mushroom', level: 25, iconUrl: null }], members: MOCK_USERS.slice(0, 2).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) },
+                { mapName: 'Henesys Hunting Ground', monsters: [{ name: 'Orange Mushroom', level: 8, iconUrl: null }], members: MOCK_USERS.slice(2, 3).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) }
             ];
             return of({ maps, totalMaps: maps.length, totalMembers: maps.reduce((sum, map) => sum + map.members.length, 0) });
         }

@@ -24,6 +24,13 @@
             </summary>
 
             <div class="party-body">
+                <ul class="monster-list" *ngIf="map.monsters.length">
+                    <li class="monster-item" *ngFor="let monster of map.monsters">
+                        <img *ngIf="monster.iconUrl" class="monster-icon" referrerpolicy="no-referrer" [src]="monster.iconUrl" [alt]="monster.name">
+                        <span class="monster-name">{{ monster.name }}</span>
+                        <span class="monster-level" *ngIf="monster.level !== null">Lv. {{ monster.level }}</span>
+                    </li>
+                </ul>
                 <ul class="member-list">
                     <li class="member-item" *ngFor="let member of map.members">
                         <span class="member-character">{{ member.characterName }}</span>
