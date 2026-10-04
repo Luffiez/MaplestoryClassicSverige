@@ -6,6 +6,12 @@ import { EMPTY, catchError, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
 import { Character, User } from '../../models/player.model';
 
+type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
+
+function getHighestCharacterLevel(player: User): number {
+    return player.characters.reduce((highest, character) => Math.max(highest, character.level), 0);
+}
+
 @Component({
     selector: 'app-players-list',
     standalone: true,
@@ -22,6 +28,7 @@ export class PlayersListComponent implements OnInit {
     presenceError = signal(false);
     searchQuery = signal('');
     selectedJob = signal('');
+    selectedSort = signal<PlayerSort>('default');
     currentOffset = signal(0);
     pageSize = 25;
     private readonly fetchSize = 100;
@@ -54,6 +61,23 @@ export class PlayersListComponent implements OnInit {
             return matchesSearch && matchesJob;
         });
     });
+    sortedPlayers = computed(() => {
+        const sort = this.selectedSort();
+        const players = this.filteredPlayers();
+
+        switch (sort) {
+            case 'created-asc':
+                return [...players].sort((a, b) => Date.parse(a.createdAt) - Date.parse(b.createdAt));
+            case 'created-desc':
+                return [...players].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+            case 'level-asc':
+                return [...players].sort((a, b) => getHighestCharacterLevel(a) - getHighestCharacterLevel(b));
+            case 'level-desc':
+                return [...players].sort((a, b) => getHighestCharacterLevel(b) - getHighestCharacterLevel(a));
+            default:
+                return players;
+        }
+    });
     playerTrophies = computed(() => {
         const entries = this.allPlayers().flatMap(player => {
             const character = player.characters.reduce<Character | null>(
@@ -83,8 +107,8 @@ export class PlayersListComponent implements OnInit {
             ])
         );
     });
-    players = computed(() => this.filteredPlayers().slice(this.currentOffset(), this.currentOffset() + this.pageSize));
-    totalCount = computed(() => this.filteredPlayers().length);
+    players = computed(() => this.sortedPlayers().slice(this.currentOffset(), this.currentOffset() + this.pageSize));
+    totalCount = computed(() => this.sortedPlayers().length);
     hasMorePlayers = computed(() => this.currentOffset() + this.pageSize < this.totalCount());
 
     constructor(
@@ -97,6 +121,12 @@ export class PlayersListComponent implements OnInit {
         this.route.queryParamMap.subscribe(params => {
             this.searchQuery.set(params.get('search') ?? '');
             this.selectedJob.set(params.get('job') ?? '');
+            const sort = params.get('sort');
+            this.selectedSort.set(
+                sort === 'created-asc' || sort === 'created-desc' || sort === 'level-asc' || sort === 'level-desc'
+                    ? sort
+                    : 'default'
+            );
             this.currentOffset.set(0);
         });
         this.loadPlayers();
@@ -161,7 +191,8 @@ export class PlayersListComponent implements OnInit {
             relativeTo: this.route,
             queryParams: {
                 search: value.trim() || null,
-                job: this.selectedJob() || null
+                job: this.selectedJob() || null,
+                sort: this.selectedSort() === 'default' ? null : this.selectedSort()
             },
             replaceUrl: true
         });
@@ -172,7 +203,20 @@ export class PlayersListComponent implements OnInit {
             relativeTo: this.route,
             queryParams: {
                 search: this.searchQuery().trim() || null,
-                job: value || null
+                job: value || null,
+                sort: this.selectedSort() === 'default' ? null : this.selectedSort()
+            },
+            replaceUrl: true
+        });
+    }
+
+    onSortChange(value: PlayerSort): void {
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                search: this.searchQuery().trim() || null,
+                job: this.selectedJob() || null,
+                sort: value === 'default' ? null : value
             },
             replaceUrl: true
         });

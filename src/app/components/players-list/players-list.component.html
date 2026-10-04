@@ -1,17 +1,28 @@
 <div class="players-container">
     <h1>Medlemmar</h1>
-
+    <p>Här listas alla medlemmar som vid något tillfälle registrerat någon av sina karaktärer. </p>
     <div class="filters-bar">
         <div class="search-bar">
             <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
                 aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
         </div>
-        <label class="job-filter">
+        <label class="filter-field">
             Jobb
-            <select class="job-select" aria-label="Filtrera medlemmar efter karaktärsjobb"
-                [value]="selectedJob()" (change)="onJobFilter($any($event.target).value)">
+            <select class="filter-select" aria-label="Filtrera medlemmar efter karaktärsjobb" [value]="selectedJob()"
+                (change)="onJobFilter($any($event.target).value)">
                 <option value="">Alla jobb</option>
                 <option *ngFor="let job of availableJobs()" [value]="job">{{ job }}</option>
+            </select>
+        </label>
+        <label class="filter-field">
+            Sortera efter
+            <select class="filter-select" aria-label="Sortera medlemmar" [value]="selectedSort()"
+                (change)="onSortChange($any($event.target).value)">
+                <option value="default">Standardordning</option>
+                <option value="created-asc">Medlemsålder ↑</option>
+                <option value="created-desc">Medlemsålder ↓</option>
+                <option value="level-asc">Karaktärslevel ↑</option>
+                <option value="level-desc">Karaktärslevel ↓</option>
             </select>
         </label>
     </div>
