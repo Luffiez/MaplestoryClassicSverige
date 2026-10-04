@@ -21,20 +21,38 @@ export class PlayersListComponent implements OnInit {
     error = signal<string | null>(null);
     presenceError = signal(false);
     searchQuery = signal('');
+    selectedJob = signal('');
     currentOffset = signal(0);
     pageSize = 25;
     private readonly fetchSize = 100;
 
-    filteredPlayers = computed(() => {
-        const query = this.searchQuery().trim().toLowerCase();
-        if (!query) {
-            return this.allPlayers();
+    availableJobs = computed(() => {
+        const jobs = new Map<string, string>();
+        for (const player of this.allPlayers()) {
+            for (const character of player.characters) {
+                const job = character.job.trim();
+                if (job) {
+                    jobs.set(job.toLowerCase(), job);
+                }
+            }
         }
 
-        return this.allPlayers().filter(player =>
-            (player.discordUsername ?? '').toLowerCase().includes(query)
-            || player.discordUserId.toLowerCase().includes(query)
-            || player.characters.some(character => character.characterName.toLowerCase().includes(query)));
+        return Array.from(jobs.values()).sort((a, b) => a.localeCompare(b, 'sv'));
+    });
+    filteredPlayers = computed(() => {
+        const query = this.searchQuery().trim().toLowerCase();
+        const selectedJob = this.selectedJob().trim().toLowerCase();
+
+        return this.allPlayers().filter(player => {
+            const matchesSearch = !query
+                || (player.discordUsername ?? '').toLowerCase().includes(query)
+                || player.discordUserId.toLowerCase().includes(query)
+                || player.characters.some(character => character.characterName.toLowerCase().includes(query));
+            const matchesJob = !selectedJob
+                || player.characters.some(character => character.job.trim().toLowerCase() === selectedJob);
+
+            return matchesSearch && matchesJob;
+        });
     });
     playerTrophies = computed(() => {
         const entries = this.allPlayers().flatMap(player => {
@@ -78,6 +96,7 @@ export class PlayersListComponent implements OnInit {
     ngOnInit(): void {
         this.route.queryParamMap.subscribe(params => {
             this.searchQuery.set(params.get('search') ?? '');
+            this.selectedJob.set(params.get('job') ?? '');
             this.currentOffset.set(0);
         });
         this.loadPlayers();
@@ -140,7 +159,21 @@ export class PlayersListComponent implements OnInit {
     onSearch(value: string): void {
         this.router.navigate([], {
             relativeTo: this.route,
-            queryParams: { search: value.trim() || null },
+            queryParams: {
+                search: value.trim() || null,
+                job: this.selectedJob() || null
+            },
+            replaceUrl: true
+        });
+    }
+
+    onJobFilter(value: string): void {
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                search: this.searchQuery().trim() || null,
+                job: value || null
+            },
             replaceUrl: true
         });
     }

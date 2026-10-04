@@ -1,9 +1,19 @@
 <div class="players-container">
     <h1>Medlemmar</h1>
 
-    <div class="search-bar">
-        <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
-            aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
+    <div class="filters-bar">
+        <div class="search-bar">
+            <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
+                aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
+        </div>
+        <label class="job-filter">
+            Jobb
+            <select class="job-select" aria-label="Filtrera medlemmar efter karaktärsjobb"
+                [value]="selectedJob()" (change)="onJobFilter($any($event.target).value)">
+                <option value="">Alla jobb</option>
+                <option *ngFor="let job of availableJobs()" [value]="job">{{ job }}</option>
+            </select>
+        </label>
     </div>
 
     <div *ngIf="presenceError()" class="presence-error" role="status" aria-live="polite">
@@ -23,7 +33,8 @@
     </div>
 
     <div *ngIf="!isLoading() && players().length > 0" class="players-list">
-        <details class="player-card" *ngFor="let player of players()" [open]="searchQuery().trim() !== ''">
+        <details class="player-card" *ngFor="let player of players()"
+            [open]="searchQuery().trim() !== '' || selectedJob() !== ''">
             <summary class="player-header">
                 <span class="player-summary-main">
                     <span class="chevron" aria-hidden="true">▼</span>
