@@ -44,7 +44,7 @@ export class BotCommandsComponent {
         {
             name: '/joinparty {mapName}',
             description: 'Markera vilken karta du tränar på, fler kanske vill haka på?',
-            details: 'Använd kommandot i Discord för att ange vilken karta du för närvarande tränar på.'
+            details: 'Använd kommandot i Discord för att ange vilken karta du för närvarande tränar på. /leaveparty körs automatiskt efter 12 timmar.'
         }
         ,
         {
