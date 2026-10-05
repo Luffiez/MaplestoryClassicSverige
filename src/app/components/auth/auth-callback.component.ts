@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -14,6 +15,9 @@ import { CommonModule } from '@angular/common';
       </div>
       <div *ngIf="error" class="error">
         <p>{{ error }}</p>
+        <p>Du måste vara medlem i Maplestory Classic Sverige på Discord för att logga in.</p>
+        <a class="join-btn" [href]="discordInviteUrl" target="_blank" rel="noopener">Gå med i servern</a>
+        <a class="back-link" (click)="goHome()">Tillbaka till startsidan</a>
       </div>
     </div>
   `,
@@ -33,17 +37,26 @@ import { CommonModule } from '@angular/common';
     .error {
       color: #c00;
     }
+
+    .join-btn { display: inline-block; margin: 0.5rem 0; padding: 0.6rem 1.2rem; background: #5865f2; color: #fff; border-radius: 6px; text-decoration: none; }
+
+    .back-link { display: block; color: #888; cursor: pointer; font-size: 1rem; }
   `]
 })
 export class AuthCallbackComponent implements OnInit {
   loading = true;
   error: string | null = null;
+  readonly discordInviteUrl = environment.discordInviteUrl;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService
   ) { }
+
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
@@ -53,14 +66,12 @@ export class AuthCallbackComponent implements OnInit {
       if (errorParam) {
         this.error = `Authentication failed: ${errorParam}`;
         this.loading = false;
-        setTimeout(() => this.router.navigate(['/']), 3000);
         return;
       }
 
       if (!code) {
         this.error = 'No authorization code received';
         this.loading = false;
-        setTimeout(() => this.router.navigate(['/']), 3000);
         return;
       }
 
@@ -72,8 +83,7 @@ export class AuthCallbackComponent implements OnInit {
         error: (err) => {
           this.error = err.error?.message || 'Failed to authenticate';
           this.loading = false;
-          setTimeout(() => this.router.navigate(['/']), 3000);
-        }
+          }
       });
     });
   }

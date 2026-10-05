@@ -1,6 +1,6 @@
 import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
@@ -15,7 +15,7 @@ function getHighestCharacterLevel(player: User): number {
 @Component({
     selector: 'app-players-list',
     standalone: true,
-    imports: [CommonModule, NgOptimizedImage, RouterLink],
+    imports: [CommonModule, NgOptimizedImage],
     templateUrl: './players-list.component.html',
     styleUrl: './players-list.component.css'
 })
