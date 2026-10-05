@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, tap } from 'rxjs';
+import { Observable, map, of, switchMap, tap } from 'rxjs';
 import { AuthUser } from '../../models/auth.model';
 import { environment } from '../../../environments/environment';
 import { MOCK_AUTH_USER } from '../../mocks/mock-users';
@@ -103,12 +103,21 @@ export class AuthService {
             `${this.BACKEND_URL}/api/auth/discord`,
             { code, redirectUri: this.REDIRECT_URI }
         ).pipe(
-            tap(response => {
-                this.authToken.set(response.token);
-                this.isAuthenticated.set(true);
-                localStorage.setItem(this.TOKEN_KEY, response.token);
-                this.loadCurrentUser();
-            })
+            switchMap(response =>
+                this.http.get<AuthUser>(`${this.BACKEND_URL}/api/auth/me`, {
+                    headers: { Authorization: `Bearer ${response.token}` }
+                }).pipe(
+                    tap(user => {
+                        this.authToken.set(response.token);
+                        this.user.set(user);
+                        this.isAuthenticated.set(true);
+                        localStorage.setItem(this.TOKEN_KEY, response.token);
+                        this.startPresenceHeartbeat();
+                    }),
+                    map(() => response)
+                )
+            ),
+            tap({ error: () => this.clearAuth() })
         );
     }
 
