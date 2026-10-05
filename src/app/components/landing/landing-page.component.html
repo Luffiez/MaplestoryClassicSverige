@@ -1,4 +1,14 @@
 <main class="content-panel">
-    <p class="eyebrow">Välkommen!</p>
-    <p>Logga in med Discord för att få tillgång.</p>
+    <h1>Välkommen!</h1>
+    <p>För att få tillgång till vår tjänst behöver du vara medlem i vår Discord-server. Login görs därefter med Discord.
+    </p>
+
+
+    <div class="landing-actions">
+        <button class="landing-btn" (click)="authService.loginWithDiscord()">
+            <span>Logga in</span>
+            <img class="discord-mark" src="discord-logo-white.png" alt="Discord">
+        </button>
+        <a class="landing-btn" [href]="discordInviteUrl" target="_blank" rel="noopener">Gå med</a>
+    </div>
 </main>

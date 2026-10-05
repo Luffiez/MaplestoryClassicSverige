@@ -7,6 +7,9 @@
     z-index: 1;
     padding: 2.5rem 2.25rem 2.75rem;
     background: rgba(255, 255, 255, 0.82);
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .eyebrow {
@@ -34,4 +37,41 @@ h1 {
     color: #6b5747;
     font-size: 1.12rem;
     line-height: 1.7;
+}
+
+.landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.landing-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.7rem;
+    background: linear-gradient(180deg, #5b88d8 0%, #3b6db0 100%);
+    color: white;
+    border: 2px solid #2d466d;
+    box-shadow: 0 3px 0 #1f3551;
+    padding: 0.45rem 0.7rem;
+    cursor: var(--clickable-cursor);
+    text-decoration: none;
+    font: inherit;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-size: 0.72rem;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.landing-btn:hover {
+    transform: translateY(-1px);
+}
+
+.discord-mark {
+    display: block;
+    height: 1rem;
+    object-fit: contain;
+    transform: scale(1.3);
 }

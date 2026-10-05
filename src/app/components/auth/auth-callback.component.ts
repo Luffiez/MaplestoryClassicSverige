@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../services/auth/auth.service';
+import { environment } from '../../../environments/environment';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -45,7 +46,7 @@ import { CommonModule } from '@angular/common';
 export class AuthCallbackComponent implements OnInit {
   loading = true;
   error: string | null = null;
-  readonly discordInviteUrl = 'https://discord.gg/r55DABTdWG';
+  readonly discordInviteUrl = environment.discordInviteUrl;
 
   constructor(
     private route: ActivatedRoute,
