@@ -14,11 +14,7 @@ interface BotCommand {
 })
 export class BotCommandsComponent {
     protected readonly commands: BotCommand[] = [
-        {
-            name: '/check {discordUsername}',
-            description: 'Visa information om en spelares synkade MapleStory-karaktär.',
-            details: 'Kör kommandot i Discord för att visa karaktärsinformation som har synkats av en spelare.'
-        },
+
         {
             name: '/sync {characterName}',
             description: 'Länka ditt Discord-konto till en MapleStory-karaktär.',
@@ -30,29 +26,35 @@ export class BotCommandsComponent {
             details: 'Använd kommandot i Discord när du vill ta bort en karaktär som tidigare har synkats.'
         },
         {
-            name: '/leaderboards',
-            description: 'Visa varje Discord-användares karaktär med högst nivå bland de synkade karaktärerna.',
-            details: 'Kör kommandot i Discord för att visa topplistan baserad på användarnas högsta synkade karaktärsnivå.'
+            name: '/check {discordUsername}',
+            description: 'Visa information om en spelares synkade MapleStory-karaktär.',
+            details: 'Använd kommandot i Discord för att visa karaktärsinformation som har synkats av en spelare.'
+        },
+        {
+            name: '/nickname {nickname}',
+            description: 'Ändra ditt Discord-namn till ett specifikt smeknamn.',
+            details: 'Använd kommandot i Discord för att ändra ditt smeknamn.'
         },
         {
             name: '/setprimary {characterName}',
             description: 'Ställ in en av dina synkade karaktärer som primär. Servernamnet berikas med klass och level från den primära karaktären.',
             details: 'Använd kommandot i Discord när du vill ställa in en av dina synkade karaktärer som primär.'
-        }
-
-        ,
+        },
+        {
+            name: '/leaderboards',
+            description: 'Visa varje Discord-användares karaktär med högst nivå bland de synkade karaktärerna.',
+            details: 'Använd kommandot i Discord för att visa topplistan baserad på användarnas högsta synkade karaktärsnivå.'
+        },
         {
             name: '/joinparty {mapName}',
             description: 'Markera vilken karta du tränar på, fler kanske vill haka på?',
             details: 'Använd kommandot i Discord för att ange vilken karta du för närvarande tränar på. /leaveparty körs automatiskt efter 12 timmar.'
-        }
-        ,
+        },
         {
             name: '/leaveparty',
             description: 'Lämna den aktuella träningsgruppen på kartan.',
             details: 'Använd kommandot i Discord när du vill lämna den aktuella träningsgruppen på kartan.'
-        }
-        ,
+        },
         {
             name: '/partylist',
             description: 'Visa listan över alla kartor som spelare för närvarande tränar på.',
