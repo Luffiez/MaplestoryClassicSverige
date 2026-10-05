@@ -12,7 +12,7 @@ jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
     env:
-      BASE_HREF: /MaplestoryClassicSverige/
+      BASE_HREF: /
 
     steps:
       - uses: actions/checkout@v4
