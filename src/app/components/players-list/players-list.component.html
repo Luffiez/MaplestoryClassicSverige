@@ -31,6 +31,10 @@
         Närvarostatus kunde inte hämtas. Status visas som okänd tills anslutningen fungerar igen.
     </div>
 
+    <div *ngIf="nicknameError()" class="presence-error" role="status" aria-live="polite">
+        Ett eller flera smeknamn kunde inte hämtas. Visar Discord-namnen i stället.
+    </div>
+
     <div *ngIf="error()" class="error-message">
         {{ error() }}
     </div>
@@ -54,7 +58,7 @@
                         [class.unknown]="onlineUserIds() === null" role="img"
                         [attr.aria-label]="getPresenceLabel(player.discordUserId)"
                         [title]="getPresenceLabel(player.discordUserId)"></span>
-                    <span class="player-name">{{ player.discordUsername || player.discordUserId }}</span>
+                    <span class="player-name">{{ getPlayerDisplayName(player) }}</span>
                     <img *ngIf="playerTrophies().get(player.id) as trophy" class="player-trophy" [ngSrc]="trophy.src"
                         [alt]="trophy.alt" width="32" height="32" />
                 </span>
@@ -66,11 +70,13 @@
 
             <div class="player-body">
                 <a class="discord-link" [href]="'https://discord.com/users/' + player.discordUserId" target="_blank"
-                    rel="noopener noreferrer">Öppna discord profil ↗</a>
+                    rel="noopener noreferrer">Öppna discord profil, @{{ player.discordUsername || player.discordUserId
+                    }} ↗</a>
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
                         <div class="character-item" *ngFor="let character of player.characters">
-                            <div class="character-portrait">
+                            <div class="character-portrait"
+                                [style.background-image]="getClassBackground(character.class)">
                                 <div class="character-image"
                                     *ngIf="character.characterImageUrl; else missingCharacterImage">
                                     <img [src]="character.characterImageUrl" [alt]="character.characterName" />

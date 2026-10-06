@@ -2,11 +2,19 @@ import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angula
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { EMPTY, catchError, switchMap, timer } from 'rxjs';
+import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
 import { Character, User } from '../../models/player.model';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
+
+const CLASS_BACKGROUND_URLS: Readonly<Record<string, string>> = {
+    magician: 'url("/bg_elinia.png")',
+    thief: 'url("/bg_kerning.png")',
+    theif: 'url("/bg_kerning.png")',
+    warrior: 'url("/bg_perion.png")',
+    bowman: 'url("/bg_henesys.png")'
+};
 
 function getHighestCharacterLevel(player: User): number {
     return player.characters.reduce((highest, character) => Math.max(highest, character.level), 0);
@@ -26,6 +34,8 @@ export class PlayersListComponent implements OnInit {
     isLoading = signal(true);
     error = signal<string | null>(null);
     presenceError = signal(false);
+    nicknameError = signal(false);
+    userNicknames = signal<ReadonlyMap<string, string>>(new Map());
     searchQuery = signal('');
     selectedJob = signal('');
     selectedSort = signal<PlayerSort>('default');
@@ -54,6 +64,7 @@ export class PlayersListComponent implements OnInit {
             const matchesSearch = !query
                 || (player.discordUsername ?? '').toLowerCase().includes(query)
                 || player.discordUserId.toLowerCase().includes(query)
+                || (this.userNicknames().get(player.discordUserId)?.toLowerCase().includes(query) ?? false)
                 || player.characters.some(character => character.characterName.toLowerCase().includes(query));
             const matchesJob = !selectedJob
                 || player.characters.some(character => character.job.trim().toLowerCase() === selectedJob);
@@ -133,6 +144,35 @@ export class PlayersListComponent implements OnInit {
         this.watchOnlineUsers();
     }
 
+    private loadNicknames(users: User[]): void {
+        const discordUserIds = Array.from(new Set(users.map(user => user.discordUserId)));
+        this.userNicknames.set(new Map());
+        this.nicknameError.set(false);
+
+        if (discordUserIds.length === 0) {
+            return;
+        }
+
+        forkJoin(discordUserIds.map(discordUserId =>
+            this.playerService.getUserNickname(discordUserId).pipe(
+                catchError(error => {
+                    console.error(`Could not load nickname for Discord user ${discordUserId}.`, error);
+                    this.nicknameError.set(true);
+                    return of({ nickname: null });
+                })
+            )
+        )).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(responses => {
+            const nicknames = new Map<string, string>();
+            responses.forEach((response, index) => {
+                const nickname = response.nickname?.trim();
+                if (nickname) {
+                    nicknames.set(discordUserIds[index], nickname);
+                }
+            });
+            this.userNicknames.set(nicknames);
+        });
+    }
+
     private watchOnlineUsers(): void {
         timer(0, 30_000).pipe(
             switchMap(() => this.playerService.getOnlineUserIds().pipe(
@@ -159,6 +199,16 @@ export class PlayersListComponent implements OnInit {
         return onlineUserIds.has(discordUserId) ? 'Inloggad' : 'Inte inloggad';
     }
 
+    getClassBackground(className: string): string | null {
+        return CLASS_BACKGROUND_URLS[className.trim().toLowerCase()] ?? null;
+    }
+
+    getPlayerDisplayName(player: User): string {
+        return this.userNicknames().get(player.discordUserId)
+            || player.discordUsername
+            || player.discordUserId;
+    }
+
     loadPlayers(): void {
         this.isLoading.set(true);
         this.error.set(null);
@@ -177,6 +227,7 @@ export class PlayersListComponent implements OnInit {
                 }
 
                 this.allPlayers.set(users);
+                this.loadNicknames(users);
                 this.isLoading.set(false);
             },
             error: (err) => {

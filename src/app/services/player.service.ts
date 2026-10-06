@@ -103,4 +103,17 @@ export class PlayerService {
             headers: this.getHeaders()
         });
     }
+
+    getUserNickname(discordUserId: string): Observable<{ nickname: string | null }> {
+        if (environment.devMode) {
+            return of({ nickname: null });
+        }
+
+        return this.http.get<{ nickname: string | null }>(
+            `${this.apiUrl}/${encodeURIComponent(discordUserId)}/nickname`,
+            {
+                headers: this.getHeaders()
+            }
+        );
+    }
 }

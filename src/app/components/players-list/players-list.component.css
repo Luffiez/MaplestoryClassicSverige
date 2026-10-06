@@ -189,6 +189,9 @@ h1 {
     align-items: stretch;
     min-width: 0;
     border: 1px solid #806333;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     box-shadow: 2px 2px 0 rgba(91, 63, 25, 0.22);
 }
 
@@ -201,11 +204,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        linear-gradient(45deg, #e5dbc4 25%, transparent 25% 75%, #e5dbc4 75%),
-        linear-gradient(45deg, #e5dbc4 25%, #f8f1df 25% 75%, #e5dbc4 75%);
-    background-position: 0 0, 5px 5px;
-    background-size: 10px 10px;
+    background: transparent;
     border: none;
     color: #705c39;
     font-size: 12px;
@@ -229,7 +228,7 @@ h1 {
 .character-name {
     margin: 0;
     padding: 4px 5px;
-    background: linear-gradient(180deg, #5b5142, #393329);
+    background: linear-gradient(180deg, rgba(91, 81, 66, 0.82), rgba(57, 51, 41, 0.88));
     color: #fff;
     font-size: 13px;
     font-weight: 600;
