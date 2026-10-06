@@ -87,7 +87,8 @@ export class AuthService {
             client_id: this.DISCORD_CLIENT_ID,
             redirect_uri: this.REDIRECT_URI,
             response_type: 'code',
-            scope: 'identify email',
+            scope: 'identify email guilds',
+            prompt: 'consent',
         });
 
         window.location.href = `${this.DISCORD_AUTH_URL}?${params.toString()}`;
