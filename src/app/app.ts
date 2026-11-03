@@ -19,6 +19,7 @@ export class App {
   private readonly sfx = new Audio('maplestory-click.mp3');
   isMuted = signal(false);
   isLogoHovered = signal(false);
+  mobileMenuOpen = signal(false);
 
   constructor() {
     this.bgm.loop = true;
@@ -50,5 +51,13 @@ export class App {
     this.sfx.play().catch(() => {
       // Ignore autoplay restrictions until the user interacts.
     });
+  }
+
+  toggleMobileMenu(): void {
+    this.mobileMenuOpen.update(isOpen => !isOpen);
+  }
+
+  closeMobileMenu(): void {
+    this.mobileMenuOpen.set(false);
   }
 }

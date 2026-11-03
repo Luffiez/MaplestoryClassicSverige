@@ -17,7 +17,7 @@
   <header class="navbar">
     <div class="nav-container">
       <div class="nav-right">
-        <nav *ngIf="authService.isAuthenticated()">
+        <nav class="desktop-nav" *ngIf="authService.isAuthenticated()" aria-label="Huvudmeny">
           <ul class="nav-links">
             <li><a routerLink="/" routerLinkActive="active" (click)="playButtonSfx()">Hem</a></li>
             <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Medlemmar</a></li>
@@ -26,9 +26,26 @@
                 (click)="playButtonSfx()">Kommandon</a></li>
           </ul>
         </nav>
+        <button *ngIf="authService.isAuthenticated()" type="button" class="mobile-menu-toggle"
+          (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-controls="mobile-navigation"
+          [attr.aria-label]="mobileMenuOpen() ? 'Stäng menyn' : 'Öppna menyn'">
+          <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        </button>
       </div>
     </div>
   </header>
+
+  <nav *ngIf="authService.isAuthenticated() && mobileMenuOpen()" id="mobile-navigation" class="mobile-nav"
+    aria-label="Mobilmeny">
+    <ul class="nav-links">
+      <li><a routerLink="/" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Hem</a></li>
+      <li><a routerLink="/players" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Medlemmar</a>
+      </li>
+      <li><a routerLink="/party" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Party</a></li>
+      <li><a routerLink="/botkommandon" routerLinkActive="active" ariaCurrentWhenActive="page"
+          (click)="closeMobileMenu(); playButtonSfx()">Kommandon</a></li>
+    </ul>
+  </nav>
 
   <div class="announcement-banner">
     <div class="announcement-viewport" role="status" aria-label="Community announcement">

@@ -36,6 +36,7 @@ export class PlayersListComponent implements OnInit {
     presenceError = signal(false);
     nicknameError = signal(false);
     userNicknames = signal<ReadonlyMap<string, string>>(new Map());
+    filtersExpanded = signal(false);
     searchQuery = signal('');
     selectedJob = signal('');
     selectedSort = signal<PlayerSort>('default');
