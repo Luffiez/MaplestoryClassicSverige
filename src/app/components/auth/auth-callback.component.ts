@@ -15,7 +15,7 @@ import { CommonModule } from '@angular/common';
       </div>
       <div *ngIf="error" class="error">
         <p>{{ error }}</p>
-        <p>Du måste vara medlem i Maplestory Classic Sverige på Discord för att logga in.</p>
+        <p>Om du inte redan är medlem behöver du gå med i Maplestory Classic Sverige. Är du redan medlem kan du försöka igen om en liten stund.</p>
         <a class="join-btn" [href]="discordInviteUrl" target="_blank" rel="noopener">Gå med i servern</a>
         <a class="back-link" (click)="goHome()">Tillbaka till startsidan</a>
       </div>
