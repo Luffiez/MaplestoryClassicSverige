@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, map, of, switchMap, tap } from 'rxjs';
+import { Observable, ReplaySubject, map, of, switchMap, take, tap } from 'rxjs';
 import { AuthUser } from '../../models/auth.model';
 import { environment } from '../../../environments/environment';
 import { MOCK_AUTH_USER } from '../../mocks/mock-users';
@@ -16,6 +16,7 @@ export class AuthService {
     private readonly BACKEND_URL = environment.backendUrl;
     private readonly TOKEN_KEY = 'discord_auth_token';
     private heartbeatTimer: ReturnType<typeof setInterval> | null = null;
+    private readonly authInitialized = new ReplaySubject<void>(1);
 
     isAuthenticated = signal(false);
     user = signal<AuthUser | null>(null);
@@ -36,15 +37,18 @@ export class AuthService {
         this.authToken.set('local-development-token');
         this.user.set(MOCK_AUTH_USER);
         this.isAuthenticated.set(true);
+        this.authInitialized.next();
     }
 
     private loadStoredAuth(): void {
         const token = localStorage.getItem(this.TOKEN_KEY);
-        if (token) {
-            this.authToken.set(token);
-            this.isAuthenticated.set(true);
-            this.loadCurrentUser();
+        if (!token) {
+            this.authInitialized.next();
+            return;
         }
+
+        this.authToken.set(token);
+        this.loadCurrentUser();
     }
 
     private loadCurrentUser(): void {
@@ -53,10 +57,22 @@ export class AuthService {
         }).subscribe({
             next: user => {
                 this.user.set(user);
+                this.isAuthenticated.set(true);
                 this.startPresenceHeartbeat();
+                this.authInitialized.next();
             },
-            error: () => this.clearAuth()
+            error: () => {
+                this.clearAuth();
+                this.authInitialized.next();
+            }
         });
+    }
+
+    waitForAuthInitialization(): Observable<boolean> {
+        return this.authInitialized.pipe(
+            take(1),
+            map(() => this.isAuthenticated())
+        );
     }
 
     private startPresenceHeartbeat(): void {

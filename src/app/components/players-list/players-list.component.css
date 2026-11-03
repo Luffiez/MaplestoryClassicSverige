@@ -149,6 +149,7 @@ h1 {
 }
 
 .created-date {
+    display: none;
     margin: 0 0 15px;
     color: #999;
     font-size: 14px;
@@ -328,6 +329,14 @@ h1 {
 }
 
 @media (max-width: 700px) {
+    .player-character-count {
+        display: none;
+    }
+
+    .created-date {
+        display: block;
+    }
+
     .character-details {
         grid-template-columns: 1fr;
     }

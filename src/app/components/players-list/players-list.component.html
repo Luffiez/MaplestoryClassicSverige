@@ -73,6 +73,9 @@
             </summary>
 
             <div class="player-body">
+                <p class="created-date">
+                    Medlem sedan: {{ player.createdAt | date: 'short' }}
+                </p>
                 <a class="discord-link" [href]="'https://discord.com/users/' + player.discordUserId" target="_blank"
                     rel="noopener noreferrer">Öppna discord profil, @{{ player.discordUsername || player.discordUserId
                     }} ↗</a>
