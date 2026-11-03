@@ -20,6 +20,10 @@ h1 {
     margin-bottom: 20px;
 }
 
+.error-message button {
+    margin-left: 12px;
+}
+
 .loading,
 .no-data {
     text-align: center;

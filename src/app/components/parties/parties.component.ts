@@ -19,6 +19,12 @@ export class PartiesComponent implements OnInit {
     constructor(private playerService: PlayerService) { }
 
     ngOnInit(): void {
+        this.loadParties();
+    }
+
+    loadParties(): void {
+        this.isLoading.set(true);
+        this.error.set(null);
         this.playerService.getParties().subscribe({
             next: (response) => {
                 this.parties.set(response);

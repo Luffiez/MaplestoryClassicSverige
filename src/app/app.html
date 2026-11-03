@@ -47,34 +47,7 @@
     </ul>
   </nav>
 
-  <div class="announcement-banner">
-    <div class="announcement-viewport" role="status" aria-label="Community announcement">
-      <div class="announcement-track">
-        <div class="announcement-content">
-          <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Gå till <a routerLink="/players"><em>Medlemmar</em></a> för att se de senaste
-            karaktärsuppdateringarna.</span>
-          @if (discordCommunicationsEnabled) {
-          <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"
-              rel="noopener noreferrer"><em>här</em></a>.</span>
-          } @else {
-          <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
-          }
-        </div>
-        <div class="announcement-content" aria-hidden="true">
-          <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
-          <span>Gå till <a routerLink="/players"><em>Medlemmar</em></a> för att se de senaste
-            karaktärsuppdateringarna.</span>
-          @if (discordCommunicationsEnabled) {
-          <span>Bli medlem i discord-kanalen <a href="https://discord.gg/4WVBd4mZBw" target="_blank"
-              rel="noopener noreferrer" tabindex="-1"><em>här</em></a>.</span>
-          } @else {
-          <span>Discord-kommunikation är blockerad i utvecklingsläge.</span>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
+  <app-announcement-banner></app-announcement-banner>
 
   <router-outlet></router-outlet>
 </div>

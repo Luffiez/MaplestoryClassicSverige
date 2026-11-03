@@ -30,7 +30,6 @@
 
 .navbar,
 .mobile-nav,
-.announcement-banner,
 .content-panel {
     position: relative;
     z-index: 1;
@@ -55,73 +54,6 @@
     background: rgba(255, 249, 241, 0.9);
     padding: 0;
     border-bottom: 4px solid #4d3b2a;
-}
-
-.announcement-banner {
-    display: flex;
-    height: 26px;
-    overflow: hidden;
-    box-sizing: border-box;
-    background: linear-gradient(180deg, rgba(23, 46, 88, 0.82) 0%, rgba(10, 23, 53, 0.82) 100%);
-    border-top: 2px solid #859da2;
-    border-bottom: 2px solid #18233a;
-    box-shadow:
-        inset 0 1px 0 #c1ccca,
-        inset 0 -1px 0 #315170;
-    color: #ced768;
-    font-family: var(--maple-heading);
-    font-size: 12px;
-    letter-spacing: 0;
-    line-height: 22px;
-    white-space: nowrap;
-}
-
-.announcement-viewport {
-    min-width: 0;
-    flex: 1;
-    overflow: hidden;
-}
-
-.announcement-track {
-    display: flex;
-    width: max-content;
-    animation: announcement-scroll 20s linear infinite;
-    text-shadow: 1px 1px 0 #11182b;
-}
-
-.announcement-content {
-    display: flex;
-    flex-shrink: 0;
-}
-
-.announcement-track span {
-    padding-right: 5rem;
-}
-
-.announcement-track strong {
-    color: #f4df43;
-    font-weight: 700;
-}
-
-.announcement-track em {
-    color: #70b9d7;
-    font-style: normal;
-}
-
-.announcement-banner:hover .announcement-track {
-    animation-play-state: paused;
-}
-
-@keyframes announcement-scroll {
-    to {
-        transform: translateX(-50%);
-    }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .announcement-track {
-        animation: none;
-    }
 }
 
 .nav-container {

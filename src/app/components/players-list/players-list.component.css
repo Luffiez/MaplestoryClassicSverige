@@ -21,6 +21,10 @@ h1 {
     margin-bottom: 20px;
 }
 
+.error-message button {
+    margin-left: 12px;
+}
+
 .presence-error {
     margin: 0 0 12px;
     color: #604d25;

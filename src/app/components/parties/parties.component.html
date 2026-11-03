@@ -3,6 +3,7 @@
     <p>Här listas alla platser som medlemmar registrerat att de grindar på. </p>
     <div *ngIf="error()" class="error-message">
         {{ error() }}
+        <button type="button" (click)="loadParties()">Försök igen</button>
     </div>
 
     <div *ngIf="isLoading()" class="loading">

@@ -41,6 +41,7 @@
 
     <div *ngIf="error()" class="error-message">
         {{ error() }}
+        <button type="button" class="retry-button" (click)="loadPlayers()">Försök igen</button>
     </div>
 
     <div *ngIf="isLoading()" class="loading">
