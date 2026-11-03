@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterOutlet, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
@@ -11,7 +11,11 @@ import { AnnouncementBannerComponent } from './components/announcement-banner/an
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
-export class App {
+export class App implements OnDestroy {
+  private readonly MASCOT_MIN_DELAY_MS = 20_000;
+  private readonly MASCOT_MAX_DELAY_MS = 60_000;
+  private mascotTimer: ReturnType<typeof setTimeout> | null = null;
+
   authService = inject(AuthService);
   protected readonly title = signal('maplestory-classic-web');
   private readonly bgm = new Audio('sleepywood-bg.mp3');
@@ -19,6 +23,7 @@ export class App {
   isMuted = signal(false);
   isLogoHovered = signal(false);
   mobileMenuOpen = signal(false);
+  mascotVisible = signal(false);
 
   constructor() {
     this.bgm.loop = true;
@@ -26,6 +31,29 @@ export class App {
     this.sfx.volume = 0.45;
 
     this.startBackgroundMusic();
+    this.scheduleMascot();
+  }
+
+  ngOnDestroy(): void {
+    if (this.mascotTimer !== null) {
+      clearTimeout(this.mascotTimer);
+    }
+  }
+
+  private scheduleMascot(): void {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    const delay = this.MASCOT_MIN_DELAY_MS
+      + Math.random() * (this.MASCOT_MAX_DELAY_MS - this.MASCOT_MIN_DELAY_MS);
+
+    this.mascotTimer = setTimeout(() => this.mascotVisible.set(true), delay);
+  }
+
+  onMascotAnimationEnd(): void {
+    this.mascotVisible.set(false);
+    this.scheduleMascot();
   }
 
   private startBackgroundMusic(): void {
