@@ -1,13 +1,30 @@
 <main class="content-panel">
-    <h1>Välkommen till MapleStory Classic Sverige</h1>
-    <p>
-        Detta är en samlingsplats för svenska MapleStory-spelare.
-    </p>
+    <div class="intro">
+        <p>
+            Välkommen till en samlingsplats för svenska MapleStory-spelare. Koppla dina karaktärer till ditt
+            Discord-konto, utforska andra spelares karaktärer och följ vår interna leaderboard, direkt via Discord
+            eller här på hemsidan.
+        </p>
+        <img class="intro-icon" src="robin.webp" alt="" />
+    </div>
 
-    <p>
-        Länka dina MapleStory-karaktärer till ditt Discord-konto, se vilka karaktärer andra spelare har och följ vår
-        interna leaderboard – direkt via Discord eller här på hemsidan.
-    </p>
 
-    <app-leaderboard />
+    @if (stats(); as s) {
+    <div class="stats">
+        <div class="stat">
+            <img class="stat-icon" src="red-snail.gif" alt="" />
+            <div>
+                <p class="stat-value">{{ s.totalUsers }}</p>
+                <p class="stat-label">Användare</p>
+            </div>
+        </div>
+        <div class="stat">
+            <img class="stat-icon" src="blue-snail.gif" alt="" />
+            <div>
+                <p class="stat-value">{{ s.totalCharacters }}</p>
+                <p class="stat-label">Synkade karaktärer</p>
+            </div>
+        </div>
+    </div>
+    }
 </main>

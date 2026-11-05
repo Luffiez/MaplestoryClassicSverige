@@ -50,7 +50,7 @@ app-root {
     position: relative;
     z-index: 1;
     padding: 1rem 1.25rem 1.25rem;
-    background: rgba(255, 255, 255, 0.82);
+    background: rgba(232, 232, 232, 0.9);
 }
 
 @media (max-width: 600px) {

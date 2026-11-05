@@ -5,6 +5,7 @@
         <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="playButtonSfx()">Hem</a></li>
         <li><a routerLink="/players" routerLinkActive="active" (click)="playButtonSfx()">Medlemmar</a></li>
         <li><a routerLink="/party" routerLinkActive="active" (click)="playButtonSfx()">Party</a></li>
+        <li><a routerLink="/topplistan" routerLinkActive="active" (click)="playButtonSfx()">Topplistan</a></li>
         <li><a routerLink="/info" routerLinkActive="active" ariaCurrentWhenActive="page"
             (click)="playButtonSfx()">Info</a></li>
       </ul>
@@ -37,6 +38,7 @@
         <li><a routerLink="/players" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Medlemmar</a>
         </li>
         <li><a routerLink="/party" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Party</a></li>
+        <li><a routerLink="/topplistan" routerLinkActive="active" (click)="closeMobileMenu(); playButtonSfx()">Topplistan</a></li>
         <li><a routerLink="/info" routerLinkActive="active" ariaCurrentWhenActive="page"
             (click)="closeMobileMenu(); playButtonSfx()">Info</a></li>
       </ul>

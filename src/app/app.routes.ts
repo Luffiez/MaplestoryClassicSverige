@@ -5,12 +5,14 @@ import { authGuard } from './auth.guard';
 import { LandingPageComponent } from './components/landing/landing-page.component';
 import { PartiesComponent } from './components/parties/parties.component';
 import { HomeComponent } from './components/home/home.component';
+import { TopplistanComponent } from './components/topplistan/topplistan.component';
 
 export const routes: Routes = [
     { path: 'auth/callback', component: AuthCallbackComponent },
     { path: 'home', component: HomeComponent, canActivate: [authGuard] },
     { path: 'players', component: PlayersListComponent, canActivate: [authGuard] },
     { path: 'party', component: PartiesComponent, canActivate: [authGuard] },
+    { path: 'topplistan', component: TopplistanComponent, canActivate: [authGuard] },
     {
         path: 'info',
         loadComponent: () => import('./components/info/info.component').then(component => component.InfoComponent),

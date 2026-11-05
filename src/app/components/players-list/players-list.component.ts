@@ -100,7 +100,7 @@ export class PlayersListComponent implements OnInit {
                     : index === 1
                         ? 'Silverpokal, 2:a plats på topplistan'
                         : 'Bronspokal, 3:e plats på topplistan',
-                 title: `Sverige rank ${index + 1}`
+                title: `Sverige rank ${index + 1}`
             }
         ]));
     });
@@ -190,7 +190,7 @@ export class PlayersListComponent implements OnInit {
             return 'Närvarostatus okänd';
         }
 
-        return onlineUserIds.has(discordUserId) ? 'Inloggad' : 'Inte inloggad';
+        return onlineUserIds.has(discordUserId) ? 'Inloggad på hemsidan' : 'Inte inloggad';
     }
 
     getClassBackground(className: string): string | null {

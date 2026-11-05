@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of, retry, throwError, timer } from 'rxjs';
-import { User, UserSummary, PaginatedResponse, PartyListResponse } from '../models/player.model';
+import { User, UserSummary, UserStats, PaginatedResponse, PartyListResponse } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
 import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
@@ -84,6 +84,19 @@ export class PlayerService {
         }
 
         return this.retryTransientErrors(this.http.get<UserSummary>(`${this.apiUrl}/summary`, {
+            headers: this.getHeaders()
+        }));
+    }
+
+    getUserStats(): Observable<UserStats> {
+        if (environment.devMode) {
+            return of({
+                totalUsers: MOCK_USERS.length,
+                totalCharacters: MOCK_USERS.reduce((sum, user) => sum + user.characters.length, 0)
+            });
+        }
+
+        return this.retryTransientErrors(this.http.get<UserStats>(`${this.apiUrl}/stats`, {
             headers: this.getHeaders()
         }));
     }

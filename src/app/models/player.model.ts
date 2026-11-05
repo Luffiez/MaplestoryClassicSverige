@@ -28,6 +28,11 @@ export interface UserSummary {
     topUserIds: number[];
 }
 
+export interface UserStats {
+    totalUsers: number;
+    totalCharacters: number;
+}
+
 export interface PaginatedResponse<T> {
     items: T[];
     offset: number;
