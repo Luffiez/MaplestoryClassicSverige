@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
-import { Character, User } from '../../models/player.model';
+import { User, UserSummary } from '../../models/player.model';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
@@ -41,21 +41,15 @@ export class PlayersListComponent implements OnInit {
     selectedJob = signal('');
     selectedSort = signal<PlayerSort>('default');
     currentOffset = signal(0);
-    pageSize = 25;
+    pageSize = 10;
     private readonly fetchSize = 100;
+    private userSummary = signal<UserSummary | null>(null);
+    private serverTotalCount = signal(0);
+    private fullyLoaded = false;
+    private loadRequestId = 0;
 
     availableJobs = computed(() => {
-        const jobs = new Map<string, string>();
-        for (const player of this.allPlayers()) {
-            for (const character of player.characters) {
-                const job = character.job.trim();
-                if (job) {
-                    jobs.set(job.toLowerCase(), job);
-                }
-            }
-        }
-
-        return Array.from(jobs.values()).sort((a, b) => a.localeCompare(b, 'sv'));
+        return [...(this.userSummary()?.jobs ?? [])].sort((a, b) => a.localeCompare(b, 'sv'));
     });
     filteredPlayers = computed(() => {
         const query = this.searchQuery().trim().toLowerCase();
@@ -91,36 +85,33 @@ export class PlayersListComponent implements OnInit {
         }
     });
     playerTrophies = computed(() => {
-        const entries = this.allPlayers().flatMap(player => {
-            const character = player.characters.reduce<Character | null>(
-                (highest, current) => highest === null || current.level > highest.level ? current : highest,
-                null
-            );
-            return character ? [{ player, character }] : [];
-        });
+        const topUserIds = this.userSummary()?.topUserIds ?? [];
 
-        return new Map(entries
-            .sort((a, b) => b.character.level - a.character.level)
-            .slice(0, 3)
-            .map(({ player }, index) => [
-                player.id,
-                {
-                    src: index === 0
-                        ? 'event-trophy-gold.png'
-                        : index === 1
-                            ? 'event-trophy-silver.png'
-                            : 'event-trophy-bronze.png',
-                    alt: index === 0
-                        ? 'Guldpokal, 1:a plats på topplistan'
-                        : index === 1
-                            ? 'Silverpokal, 2:a plats på topplistan'
-                            : 'Bronspokal, 3:e plats på topplistan'
-                }
-            ])
-        );
+        return new Map(topUserIds.map((userId, index) => [
+            userId,
+            {
+                src: index === 0
+                    ? 'event-trophy-gold.png'
+                    : index === 1
+                        ? 'event-trophy-silver.png'
+                        : 'event-trophy-bronze.png',
+                alt: index === 0
+                    ? 'Guldpokal, 1:a plats på topplistan'
+                    : index === 1
+                        ? 'Silverpokal, 2:a plats på topplistan'
+                        : 'Bronspokal, 3:e plats på topplistan'
+            }
+        ]));
     });
-    players = computed(() => this.sortedPlayers().slice(this.currentOffset(), this.currentOffset() + this.pageSize));
-    totalCount = computed(() => this.sortedPlayers().length);
+    isFiltering = computed(() => Boolean(this.searchQuery().trim() || this.selectedJob() || this.selectedSort() !== 'default'));
+    players = computed(() => {
+        if (!this.isFiltering()) {
+            return this.sortedPlayers();
+        }
+
+        return this.sortedPlayers().slice(this.currentOffset(), this.currentOffset() + this.pageSize);
+    });
+    totalCount = computed(() => this.isFiltering() ? this.sortedPlayers().length : this.serverTotalCount());
     hasMorePlayers = computed(() => this.currentOffset() + this.pageSize < this.totalCount());
 
     constructor(
@@ -140,8 +131,9 @@ export class PlayersListComponent implements OnInit {
                     : 'default'
             );
             this.currentOffset.set(0);
+            this.loadPlayers();
         });
-        this.loadPlayers();
+        this.loadSummary();
         this.watchOnlineUsers();
     }
 
@@ -211,31 +203,75 @@ export class PlayersListComponent implements OnInit {
     }
 
     loadPlayers(): void {
+        const requestId = ++this.loadRequestId;
         this.isLoading.set(true);
         this.error.set(null);
-        this.loadPage(0, []);
+
+        if (!this.isFiltering()) {
+            this.loadServerPage(requestId);
+        } else if (this.fullyLoaded) {
+            this.isLoading.set(false);
+        } else {
+            this.loadPage(0, [], requestId);
+        }
     }
 
-    private loadPage(offset: number, accumulated: User[]): void {
+    private loadSummary(): void {
+        this.playerService.getUserSummary().subscribe({
+            next: summary => this.userSummary.set(summary),
+            error: err => console.error('Could not load member summary.', err)
+        });
+    }
+
+    private loadServerPage(requestId: number): void {
+        this.playerService.getUsers(this.currentOffset(), this.pageSize).subscribe({
+            next: (response) => {
+                if (requestId !== this.loadRequestId) {
+                    return;
+                }
+
+                const items = response.items ?? [];
+                this.allPlayers.set(items);
+                this.serverTotalCount.set(response.totalCount ?? items.length);
+                this.fullyLoaded = false;
+                this.loadNicknames(items);
+                this.isLoading.set(false);
+            },
+            error: (err) => this.handleLoadError(err, requestId)
+        });
+    }
+
+    private loadPage(offset: number, accumulated: User[], requestId: number): void {
         this.playerService.getUsers(offset, this.fetchSize).subscribe({
             next: (response) => {
+                if (requestId !== this.loadRequestId) {
+                    return;
+                }
+
                 const items = response.items ?? [];
                 const users = [...accumulated, ...items];
 
                 if (items.length > 0 && users.length < (response.totalCount ?? users.length)) {
-                    this.loadPage(users.length, users);
+                    this.loadPage(users.length, users, requestId);
                     return;
                 }
 
                 this.allPlayers.set(users);
+                this.fullyLoaded = true;
                 this.loadNicknames(users);
                 this.isLoading.set(false);
             },
-            error: (err) => {
-                this.error.set('Kunde inte ladda medlemmar. ' + (err.message || 'Försök igen senare.'));
-                this.isLoading.set(false);
-            }
+            error: (err) => this.handleLoadError(err, requestId)
         });
+    }
+
+    private handleLoadError(err: { message?: string }, requestId: number): void {
+        if (requestId !== this.loadRequestId) {
+            return;
+        }
+
+        this.error.set('Kunde inte ladda medlemmar. ' + (err.message || 'Försök igen senare.'));
+        this.isLoading.set(false);
     }
 
     onSearch(value: string): void {
@@ -277,10 +313,12 @@ export class PlayersListComponent implements OnInit {
     nextPage(): void {
         if (this.hasMorePlayers()) {
             this.currentOffset.set(this.currentOffset() + this.pageSize);
+            this.loadPlayers();
         }
     }
 
     previousPage(): void {
         this.currentOffset.set(Math.max(0, this.currentOffset() - this.pageSize));
+        this.loadPlayers();
     }
 }

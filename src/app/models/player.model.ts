@@ -23,6 +23,11 @@ export interface User {
     characters: Character[];
 }
 
+export interface UserSummary {
+    jobs: string[];
+    topUserIds: number[];
+}
+
 export interface PaginatedResponse<T> {
     items: T[];
     offset: number;
