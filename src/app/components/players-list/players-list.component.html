@@ -29,6 +29,7 @@
                 </select>
             </label>
         </div>
+        <button class="history-button compare-open" type="button" (click)="openCompare()">Jämför karaktärer</button>
     </div>
 
     <div *ngIf="presenceError()" class="presence-error" role="status" aria-live="polite">
@@ -174,5 +175,62 @@
             </div>
         </div>
         }
+    </dialog>
+
+    <dialog #compareDialog class="history-dialog compare-dialog" aria-labelledby="compare-dialog-title"
+        (click)="$event.target === compareDialog && compareDialog.close()">
+        <div class="history-dialog-content">
+            <h2 id="compare-dialog-title">Jämför karaktärer</h2>
+            <div class="compare-pickers">
+                <label class="filter-field">
+                    <span>Karaktär 1</span>
+                    <select class="filter-select" aria-label="Första karaktären att jämföra"
+                        [value]="compareLeftId() ?? ''" (change)="onCompareSelect('left', $any($event.target).value)">
+                        <option value="">Välj karaktär...</option>
+                        @for (option of compareCandidates(); track option.id) {
+                        <option [value]="option.id">{{ option.label }}</option>
+                        }
+                    </select>
+                </label>
+                <label class="filter-field">
+                    <span>Karaktär 2</span>
+                    <select class="filter-select" aria-label="Andra karaktären att jämföra"
+                        [value]="compareRightId() ?? ''" (change)="onCompareSelect('right', $any($event.target).value)">
+                        <option value="">Välj karaktär...</option>
+                        @for (option of compareCandidates(); track option.id) {
+                        <option [value]="option.id">{{ option.label }}</option>
+                        }
+                    </select>
+                </label>
+            </div>
+            @if (compareRows().length > 0) {
+            <div class="compare-table-wrapper">
+                <table class="compare-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Egenskap</th>
+                            <th scope="col">{{ comparePair().left?.character?.characterName }}</th>
+                            <th scope="col">{{ comparePair().right?.character?.characterName }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @for (row of compareRows(); track row.label) {
+                        <tr>
+                            <th scope="row">{{ row.label }}</th>
+                            <td [class.compare-better]="row.better === 'left'">{{ row.left }}</td>
+                            <td [class.compare-better]="row.better === 'right'">{{ row.right }}</td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <p class="history-summary">Grön markering visar vilken karaktär som ligger bäst till i respektive rad.</p>
+            } @else {
+            <p class="history-empty">{{ compareMessage() }}</p>
+            }
+            <div class="history-dialog-actions">
+                <button type="button" class="history-button" (click)="compareDialog.close()">Stäng</button>
+            </div>
+        </div>
     </dialog>
 </div>

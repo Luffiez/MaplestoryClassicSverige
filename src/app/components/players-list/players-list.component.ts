@@ -10,6 +10,20 @@ import { LEVEL_GAIN_WINDOW_DAYS, buildLevelChart, getLevelGainSince } from '../.
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
+interface CompareCandidate {
+    id: number;
+    label: string;
+    character: Character;
+    owner: User;
+}
+
+interface CompareRow {
+    label: string;
+    left: string;
+    right: string;
+    better: 'left' | 'right' | null;
+}
+
 const CLASS_BACKGROUND_URLS: Readonly<Record<string, string>> = {
     magician: 'url("/bg_elinia.png")',
     thief: 'url("/bg_kerning.png")',
@@ -20,6 +34,17 @@ const CLASS_BACKGROUND_URLS: Readonly<Record<string, string>> = {
 
 function getHighestCharacterLevel(player: User): number {
     return player.characters.reduce((highest, character) => Math.max(highest, character.level), 0);
+}
+
+function pickBetter(left: number | null, right: number | null, higherIsBetter: boolean): 'left' | 'right' | null {
+    if (left === null || right === null || left === right) {
+        return null;
+    }
+    return (left > right) === higherIsBetter ? 'left' : 'right';
+}
+
+function formatOptional(value: string | number | null | undefined): string {
+    return value === null || value === undefined || value === '' ? '—' : String(value);
 }
 
 @Component({
@@ -61,6 +86,94 @@ export class PlayersListComponent implements OnInit {
         return buildLevelChart(this.characterHistories().get(character.id) ?? []);
     });
     levelGainWindowDays = LEVEL_GAIN_WINDOW_DAYS;
+    private readonly compareDialog = viewChild<ElementRef<HTMLDialogElement>>('compareDialog');
+    compareLeftId = signal<number | null>(null);
+    compareRightId = signal<number | null>(null);
+    compareCandidates = computed<CompareCandidate[]>(() => {
+        return this.allPlayers()
+            .flatMap(owner => owner.characters.map(character => ({
+                id: character.id,
+                label: `${character.characterName} (${this.getPlayerDisplayName(owner)})`,
+                character,
+                owner
+            })))
+            .sort((a, b) => a.label.localeCompare(b.label, 'sv'));
+    });
+    comparePair = computed(() => {
+        const candidates = this.compareCandidates();
+        return {
+            left: candidates.find(candidate => candidate.id === this.compareLeftId()) ?? null,
+            right: candidates.find(candidate => candidate.id === this.compareRightId()) ?? null
+        };
+    });
+    compareMessage = computed<string | null>(() => {
+        const { left, right } = this.comparePair();
+        if (!left || !right) {
+            return 'Välj två karaktärer för att jämföra dem.';
+        }
+        if (left.id === right.id) {
+            return 'Välj två olika karaktärer.';
+        }
+        return null;
+    });
+    compareRows = computed<CompareRow[]>(() => {
+        const { left, right } = this.comparePair();
+        if (!left || !right || left.id === right.id) {
+            return [];
+        }
+        const leftGain = this.getLevelGain(left.character);
+        const rightGain = this.getLevelGain(right.character);
+        return [
+            {
+                label: 'Medlem',
+                left: this.getPlayerDisplayName(left.owner),
+                right: this.getPlayerDisplayName(right.owner),
+                better: null
+            },
+            {
+                label: 'Värld',
+                left: formatOptional(left.character.world),
+                right: formatOptional(right.character.world),
+                better: null
+            },
+            {
+                label: 'Klass',
+                left: formatOptional(left.character.class),
+                right: formatOptional(right.character.class),
+                better: null
+            },
+            {
+                label: 'Jobb',
+                left: formatOptional(left.character.job),
+                right: formatOptional(right.character.job),
+                better: null
+            },
+            {
+                label: 'Level',
+                left: String(left.character.level),
+                right: String(right.character.level),
+                better: pickBetter(left.character.level, right.character.level, true)
+            },
+            {
+                label: `Levlar senaste ${LEVEL_GAIN_WINDOW_DAYS} dagarna`,
+                left: String(leftGain),
+                right: String(rightGain),
+                better: pickBetter(leftGain, rightGain, true)
+            },
+            {
+                label: 'Official Rank',
+                left: formatOptional(left.character.rank),
+                right: formatOptional(right.character.rank),
+                better: pickBetter(left.character.rank, right.character.rank, false)
+            },
+            {
+                label: 'Sverige rank',
+                left: formatOptional(left.owner.sverigeRank),
+                right: formatOptional(right.owner.sverigeRank),
+                better: pickBetter(left.owner.sverigeRank, right.owner.sverigeRank, false)
+            }
+        ];
+    });
 
     availableJobs = computed(() => {
         return [...(this.userSummary()?.jobs ?? [])].sort((a, b) => a.localeCompare(b, 'sv'));
@@ -219,6 +332,23 @@ export class PlayersListComponent implements OnInit {
 
     onHistoryDialogClosed(): void {
         this.selectedHistoryCharacter.set(null);
+    }
+
+    openCompare(): void {
+        this.compareDialog()?.nativeElement.showModal();
+    }
+
+    onCompareSelect(side: 'left' | 'right', value: string): void {
+        const id = value ? Number(value) : null;
+        if (side === 'left') {
+            this.compareLeftId.set(id);
+        } else {
+            this.compareRightId.set(id);
+        }
+
+        const selected = this.comparePair();
+        const owners = [selected.left?.owner, selected.right?.owner].filter((owner): owner is User => !!owner);
+        this.loadCharacterHistories(owners);
     }
 
     private watchOnlineUsers(): void {
