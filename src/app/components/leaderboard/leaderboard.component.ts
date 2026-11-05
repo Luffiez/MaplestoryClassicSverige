@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterLink } from '@angular/router';
 import { LeaderboardEntry, LeaderboardService } from '../../services/leaderboard.service';
 
 @Component({
     selector: 'app-leaderboard',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgOptimizedImage],
+    imports: [NgOptimizedImage, RouterLink],
     templateUrl: './leaderboard.component.html',
     styleUrl: './leaderboard.component.css'
 })
@@ -25,7 +26,7 @@ export class LeaderboardComponent implements OnInit {
         this.leaders.set([]);
         this.error.set(null);
         this.isLoading.set(true);
-        this.leaderboardService.getTopCharacters().subscribe({
+        this.leaderboardService.getRankedCharacters().subscribe({
             next: (entries) => {
                 this.leaders.set(entries);
                 this.isLoading.set(false);

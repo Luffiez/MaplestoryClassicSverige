@@ -14,19 +14,23 @@ export interface LeaderboardEntry {
 export class LeaderboardService {
     private readonly playerService = inject(PlayerService);
     private readonly pageSize = 100;
-    private readonly topCharactersRequest = defer(() => this.loadUsers(0, [])).pipe(
+    private readonly rankedCharactersRequest = defer(() => this.loadUsers(0, [])).pipe(
         map(users => users.flatMap(player => {
             const character = player.characters.reduce<Character | null>(
                 (highest, current) => highest === null || current.level > highest.level ? current : highest,
                 null
             );
             return character ? [{ player, character }] : [];
-        }).sort((a, b) => b.character.level - a.character.level).slice(0, 3)),
+        }).sort((a, b) => b.character.level - a.character.level)),
         shareReplay({ bufferSize: 1, refCount: false })
     );
 
     getTopCharacters(): Observable<LeaderboardEntry[]> {
-        return this.topCharactersRequest;
+        return this.rankedCharactersRequest.pipe(map(entries => entries.slice(0, 3)));
+    }
+
+    getRankedCharacters(): Observable<LeaderboardEntry[]> {
+        return this.rankedCharactersRequest;
     }
 
     private loadUsers(offset: number, accumulatedUsers: User[]): Observable<User[]> {

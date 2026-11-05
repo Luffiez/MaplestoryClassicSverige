@@ -1,6 +1,10 @@
 <section class="leaderboard" aria-labelledby="leaderboard-title">
     <div class="section-heading">
-        <h2 id="leaderboard-title">Svenska topplistan</h2>
+        <div class="heading-row">
+            <img class="heading-image" src="supersmega.png" alt="" aria-hidden="true" />
+            <h2 id="leaderboard-title">Svenska topplistan</h2>
+            <img class="heading-image heading-image-flipped" src="supersmega.png" alt="" aria-hidden="true" />
+        </div>
     </div>
     @if (isLoading()) {
     <p class="status-message" role="status">Letar efter Maple Worlds starkaste hjältar...</p>
@@ -45,4 +49,19 @@
         </li>
         }
     </ol>
+    @if (leaders().length > 0) {
+    <ol class="ranking-list" aria-label="Alla karaktärer i Sverige rankade efter karaktärsnivå">
+        @for (entry of leaders(); track $index; let rank = $index) {
+        <li class="ranking-item">
+            <a class="ranking-row" routerLink="/players"
+                [queryParams]="{ search: entry.player.discordUsername || entry.player.discordUserId }"
+                title="Visa medlemmens profil">
+                <span class="ranking-position">{{ rank + 1 }}</span>
+                <span class="ranking-name">{{ entry.character.characterName }}</span>
+                <span class="ranking-job">{{ entry.character.job }}</span>
+                <span class="ranking-level">Lv {{ entry.character.level }}</span>
+            </a>
+        }
+    </ol>
+    }
 </section>
