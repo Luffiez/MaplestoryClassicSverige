@@ -95,7 +95,12 @@
                             </div>
                             <div class="character-info">
                                 <div class="character-details">
-                                    <span><strong>Level:</strong> {{ character.level }}</span>
+                                    <span><strong>Level:</strong> {{ character.level }}
+                                        @if (getLevelGain(character) > 0) {
+                                        <span class="level-gain" title="Levlar senaste 7 dagarna"
+                                            [attr.aria-label]="'Levlar senaste 7 dagarna: ' + getLevelGain(character)">↑ {{ getLevelGain(character) }}</span>
+                                        }
+                                    </span>
                                     <span><strong>Job:</strong>
                                         @if (getJobIcon(character.job); as icon) {
                                             <img class="job-icon" [src]="icon" alt="" />
@@ -107,6 +112,9 @@
                                     <span><strong>Uppdaterad:</strong> {{ character.lastSyncedAt | date:
                                         'short'}}</span>
                                 </div>
+                            </div>
+                            <div class="character-footer">
+                                <button type="button" class="history-button" (click)="openHistory(character)">Mer info</button>
                             </div>
                         </div>
                     </div>
@@ -126,4 +134,45 @@
         <span>page {{ currentOffset() / pageSize + 1 }}</span>
         <button (click)="nextPage()" [disabled]="!hasMorePlayers()" aria-label="Next page">&gt;</button>
     </div>
+
+    <dialog #historyDialog class="history-dialog" aria-labelledby="history-dialog-title"
+        (close)="onHistoryDialogClosed()" (click)="$event.target === historyDialog && historyDialog.close()">
+        @if (selectedHistoryCharacter(); as character) {
+        <div class="history-dialog-content">
+            <h2 id="history-dialog-title">Historik: {{ character.characterName }}</h2>
+            <p class="history-summary">
+                Level nu: <strong>{{ character.level }}</strong>
+                · Levlar senaste {{ levelGainWindowDays }} dagarna: <strong>{{ getLevelGain(character) }}</strong>
+            </p>
+            @if (selectedHistoryChart(); as chart) {
+            <svg class="level-chart" [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height" role="img"
+                aria-label="Karaktärens level över tid">
+                @for (tick of chart.yTicks; track $index) {
+                <line class="grid-line" [attr.x1]="chart.plot.left" [attr.x2]="chart.plot.right"
+                    [attr.y1]="tick.y" [attr.y2]="tick.y" />
+                <text class="axis-label" text-anchor="end" [attr.x]="chart.plot.left - 8" [attr.y]="tick.y + 4">{{ tick.label }}</text>
+                }
+                <line class="axis-line" [attr.x1]="chart.plot.left" [attr.x2]="chart.plot.left"
+                    [attr.y1]="chart.plot.top" [attr.y2]="chart.plot.bottom" />
+                <line class="axis-line" [attr.x1]="chart.plot.left" [attr.x2]="chart.plot.right"
+                    [attr.y1]="chart.plot.bottom" [attr.y2]="chart.plot.bottom" />
+                @for (label of chart.xLabels; track $index) {
+                <text class="axis-label" text-anchor="middle" [attr.x]="label.x" [attr.y]="chart.plot.bottom + 20">{{ label.label }}</text>
+                }
+                <path class="level-line" fill="none" [attr.d]="chart.path" />
+                @for (point of chart.points; track point.recordedAt) {
+                <circle class="level-point" [attr.cx]="point.x" [attr.cy]="point.y" r="4">
+                    <title>Level {{ point.level }} · {{ point.recordedAt | date: 'short' }}</title>
+                </circle>
+                }
+            </svg>
+            } @else {
+            <p class="history-empty">Ingen historik finns ännu. Historik skapas vid nästa synk.</p>
+            }
+            <div class="history-dialog-actions">
+                <button type="button" class="history-button" (click)="historyDialog.close()">Stäng</button>
+            </div>
+        </div>
+        }
+    </dialog>
 </div>

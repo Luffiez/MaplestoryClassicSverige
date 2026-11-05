@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of, retry, switchMap, throwError, timer } from 'rxjs';
-import { User, UserSummary, UserStats, PaginatedResponse, PartyListResponse, CharacterLevelUp } from '../models/player.model';
+import { CharacterLevelHistoryEntry, User, UserSummary, UserStats, PaginatedResponse, PartyListResponse, CharacterLevelUp } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
-import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
+import { MOCK_AUTH_USER, MOCK_CHARACTER_LEVEL_HISTORY, MOCK_USERS } from '../mocks/mock-users';
 
 @Injectable({
     providedIn: 'root'
@@ -150,11 +150,32 @@ export class PlayerService {
 
     getRecentLevelUps(limit = 3): Observable<CharacterLevelUp[]> {
         if (environment.devMode) {
-            return of([]);
+            const levelUps = MOCK_CHARACTER_LEVEL_HISTORY
+                .filter(entry => MOCK_CHARACTER_LEVEL_HISTORY.some(previous =>
+                    previous.characterId === entry.characterId
+                    && previous.recordedAt < entry.recordedAt
+                    && previous.level < entry.level))
+                .sort((a, b) => b.recordedAt.localeCompare(a.recordedAt))
+                .slice(0, limit)
+                .map(({ characterId, characterName, level, recordedAt }) => ({ characterId, characterName, level, recordedAt }));
+            return of(levelUps);
         }
 
         return this.retryTransientErrors(this.http.get<CharacterLevelUp[]>(
             `${environment.backendUrl}/api/characters/level-history/recent?limit=${limit}`,
+            { headers: this.getHeaders() }
+        ));
+    }
+
+    getCharacterLevelHistory(characterId: number): Observable<CharacterLevelHistoryEntry[]> {
+        if (environment.devMode) {
+            return of(MOCK_CHARACTER_LEVEL_HISTORY
+                .filter(entry => entry.characterId === characterId)
+                .map(({ id, characterId: entryCharacterId, level, recordedAt }) => ({ id, characterId: entryCharacterId, level, recordedAt })));
+        }
+
+        return this.retryTransientErrors(this.http.get<CharacterLevelHistoryEntry[]>(
+            `${environment.backendUrl}/api/characters/${characterId}/level-history`,
             { headers: this.getHeaders() }
         ));
     }

@@ -1,11 +1,12 @@
-import { Component, DestroyRef, OnInit, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, ElementRef, OnInit, computed, effect, inject, signal, untracked, viewChild } from '@angular/core';
 import { CommonModule, NgOptimizedImage } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
-import { Character, User, UserSummary } from '../../models/player.model';
+import { Character, CharacterLevelHistoryEntry, User, UserSummary } from '../../models/player.model';
 import { getJobIconUrl } from '../../job-icon';
+import { LEVEL_GAIN_WINDOW_DAYS, buildLevelChart, getLevelGainSince } from '../../character-level-history';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
@@ -48,6 +49,18 @@ export class PlayersListComponent implements OnInit {
     private serverTotalCount = signal(0);
     private fullyLoaded = false;
     private loadRequestId = 0;
+    private characterHistories = signal<ReadonlyMap<number, CharacterLevelHistoryEntry[]>>(new Map());
+    private requestedHistoryIds = new Set<number>();
+    private readonly historyDialog = viewChild<ElementRef<HTMLDialogElement>>('historyDialog');
+    selectedHistoryCharacter = signal<Character | null>(null);
+    selectedHistoryChart = computed(() => {
+        const character = this.selectedHistoryCharacter();
+        if (!character) {
+            return null;
+        }
+        return buildLevelChart(this.characterHistories().get(character.id) ?? []);
+    });
+    levelGainWindowDays = LEVEL_GAIN_WINDOW_DAYS;
 
     availableJobs = computed(() => {
         return [...(this.userSummary()?.jobs ?? [])].sort((a, b) => a.localeCompare(b, 'sv'));
@@ -120,7 +133,12 @@ export class PlayersListComponent implements OnInit {
         private playerService: PlayerService,
         private route: ActivatedRoute,
         private router: Router
-    ) { }
+    ) {
+        effect(() => {
+            const visiblePlayers = this.players();
+            untracked(() => this.loadCharacterHistories(visiblePlayers));
+        });
+    }
 
     ngOnInit(): void {
         this.route.queryParamMap.subscribe(params => {
@@ -166,6 +184,41 @@ export class PlayersListComponent implements OnInit {
             });
             this.userNicknames.set(nicknames);
         });
+    }
+
+    private loadCharacterHistories(players: User[]): void {
+        const missing = players
+            .flatMap(player => player.characters)
+            .filter(character => !this.requestedHistoryIds.has(character.id));
+
+        missing.forEach(character => {
+            this.requestedHistoryIds.add(character.id);
+            this.playerService.getCharacterLevelHistory(character.id).pipe(
+                catchError(error => {
+                    console.error(`Could not load level history for character ${character.characterName}.`, error);
+                    return of(null);
+                }),
+                takeUntilDestroyed(this.destroyRef)
+            ).subscribe(history => {
+                if (history === null) {
+                    return;
+                }
+                this.characterHistories.update(current => new Map(current).set(character.id, history));
+            });
+        });
+    }
+
+    getLevelGain(character: Character): number {
+        return getLevelGainSince(this.characterHistories().get(character.id) ?? []);
+    }
+
+    openHistory(character: Character): void {
+        this.selectedHistoryCharacter.set(character);
+        this.historyDialog()?.nativeElement.showModal();
+    }
+
+    onHistoryDialogClosed(): void {
+        this.selectedHistoryCharacter.set(null);
     }
 
     private watchOnlineUsers(): void {

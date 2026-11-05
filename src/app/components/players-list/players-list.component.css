@@ -239,6 +239,118 @@ h1 {
     width: auto;
 }
 
+.character-details .level-gain {
+    display: inline-flex;
+    align-items: center;
+    width: auto;
+    padding: 0 6px;
+    margin-left: 6px;
+    border: 1px solid #2e7d32;
+    border-radius: 999px;
+    background: #e3f1e0;
+    color: #2e7d32;
+    font-weight: 700;
+    font-size: 12px;
+    cursor: help;
+}
+
+.character-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.history-button {
+    padding: 6px 12px;
+    border: 2px solid var(--retro-border, #4d3b2a);
+    background: var(--retro-panel, #f9f3e8);
+    color: var(--retro-text, #20160f);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.history-button:hover {
+    background: var(--retro-accent, #d18a2b);
+}
+
+.history-dialog {
+    width: min(720px, calc(100vw - 32px));
+    max-height: calc(100vh - 32px);
+    padding: 0;
+    border: 3px solid var(--retro-border, #4d3b2a);
+    background: var(--retro-panel, #f9f3e8);
+    color: var(--retro-text, #20160f);
+}
+
+.history-dialog::backdrop {
+    background: rgba(32, 22, 15, 0.55);
+}
+
+.history-dialog-content {
+    display: grid;
+    gap: 12px;
+    padding: 20px;
+}
+
+.history-dialog-content h2 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.history-summary {
+    margin: 0;
+    color: var(--retro-muted, #6b5747);
+    font-size: 14px;
+}
+
+.level-chart {
+    width: 100%;
+    height: auto;
+    background: #fffdf7;
+    border: 1px solid rgba(77, 59, 42, 0.35);
+}
+
+.level-chart .grid-line {
+    stroke: rgba(77, 59, 42, 0.15);
+    stroke-dasharray: 4 4;
+}
+
+.level-chart .axis-line {
+    stroke: var(--retro-border, #4d3b2a);
+    stroke-width: 1.5;
+}
+
+.level-chart .axis-label {
+    fill: var(--retro-muted, #6b5747);
+    font-size: 12px;
+}
+
+.level-chart .level-line {
+    stroke: var(--retro-accent, #d18a2b);
+    stroke-width: 3;
+    stroke-linejoin: round;
+}
+
+.level-chart .level-point {
+    fill: var(--retro-border, #4d3b2a);
+    stroke: #fffdf7;
+    stroke-width: 2;
+}
+
+.history-empty {
+    margin: 0;
+    padding: 24px 0;
+    text-align: center;
+    color: var(--retro-muted, #6b5747);
+}
+
+.history-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
 .character-details {
     display: grid;
     grid-template-columns: minmax(0, 1fr);

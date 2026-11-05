@@ -1,5 +1,5 @@
 import { AuthUser } from '../models/auth.model';
-import { User } from '../models/player.model';
+import { CharacterLevelHistoryEntry, User } from '../models/player.model';
 
 export const MOCK_AUTH_USER: AuthUser = {
     id: '100000000000000001',
@@ -89,7 +89,7 @@ export const MOCK_USERS: User[] = [
         sverigeRank: 4,
         characters: [
             {
-                id: 3,
+                id: 4,
                 discordUserId: '100000000000000002',
                 isPrimary: true,
                 characterName: 'Wizeard',
@@ -105,4 +105,17 @@ export const MOCK_USERS: User[] = [
             }
         ]
     },
+];
+
+// Keyed by characterId. Wizeard uses id 4 so it does not clash with Hero (id 3).
+export const MOCK_CHARACTER_LEVEL_HISTORY: (CharacterLevelHistoryEntry & { characterName: string })[] = [
+    { id: 1, characterId: 1, characterName: 'HolyMoly', level: 138, recordedAt: '2026-09-01T10:00:00Z' },
+    { id: 2, characterId: 1, characterName: 'HolyMoly', level: 140, recordedAt: '2026-09-20T19:30:00Z' },
+    { id: 3, characterId: 1, characterName: 'HolyMoly', level: 141, recordedAt: '2026-10-28T21:00:00Z' },
+    { id: 4, characterId: 1, characterName: 'HolyMoly', level: 142, recordedAt: '2026-11-03T09:15:00Z' },
+    { id: 5, characterId: 2, characterName: 'Shadower', level: 92, recordedAt: '2026-08-15T12:00:00Z' },
+    { id: 6, characterId: 2, characterName: 'Shadower', level: 96, recordedAt: '2026-10-01T20:45:00Z' },
+    { id: 7, characterId: 3, characterName: 'Hero', level: 121, recordedAt: '2026-10-02T08:10:00Z' },
+    { id: 8, characterId: 4, characterName: 'Wizeard', level: 66, recordedAt: '2026-07-30T14:00:00Z' },
+    { id: 9, characterId: 4, characterName: 'Wizeard', level: 68, recordedAt: '2026-10-10T18:20:00Z' }
 ];
