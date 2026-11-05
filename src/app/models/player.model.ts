@@ -38,6 +38,7 @@ export interface CharacterLevelHistoryEntry {
 export interface CharacterLevelUp {
     characterId: number;
     characterName: string;
+    previousLevel: number;
     level: number;
     recordedAt: string;
 }

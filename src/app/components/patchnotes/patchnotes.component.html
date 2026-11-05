@@ -1,0 +1,26 @@
+<main class="content-panel">
+    <header class="section-heading">
+        <h1>Patchnotes</h1>
+        <p class="section-description">Här listas de senaste ändringarna på sidan och i Discord-boten, nyast överst.</p>
+    </header>
+
+    @for (note of patchNotes; track note.date; let first = $first) {
+    <details class="patch-entry" [open]="first">
+        <summary>
+            <time [attr.datetime]="note.date">{{ note.label }}</time>
+        </summary>
+        <div class="patch-body">
+            @for (group of note.groups; track group.type) {
+            <section class="patch-group">
+                <h3 [attr.data-type]="group.type">{{ group.type }}</h3>
+                <ul>
+                    @for (text of group.texts; track $index) {
+                    <li>{{ text }}</li>
+                    }
+                </ul>
+            </section>
+            }
+        </div>
+    </details>
+    }
+</main>

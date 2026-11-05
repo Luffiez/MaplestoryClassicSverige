@@ -1,6 +1,6 @@
 <div class="announcement-banner">
   <div class="announcement-viewport" role="status" aria-label="Community announcement">
-    <div class="announcement-track">
+    <div class="announcement-track" [style.animation-duration.s]="scrollDurationSeconds()">
       <ng-template #announcementContent let-isDuplicate="isDuplicate">
         <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
         <span>Gå till <a routerLink="/players" [attr.tabindex]="isDuplicate ? -1 : null"><em>Medlemmar</em></a> för att
@@ -27,14 +27,14 @@
 
         @if (recentLevelUps().length > 0) {
         <span class="level-ups">Senaste level-ups:
-          @for (levelUp of recentLevelUps(); track $index) {
-          <a routerLink="/players" [queryParams]="{ search: levelUp.characterName }"
-            [attr.tabindex]="isDuplicate ? -1 : null"><em>{{ levelUp.characterName }} (lvl {{ levelUp.level }})</em></a>
+          @for (levelUp of recentLevelUps(); track $index; let first = $first) {
+          @if (!first) {, }<a routerLink="/players" [queryParams]="{ search: levelUp.characterName }"
+            [attr.tabindex]="isDuplicate ? -1 : null"><em>{{ levelUp.characterName }} ({{ levelUp.previousLevel }} -> {{ levelUp.level }})</em></a>
           }
         </span>
         }
       </ng-template>
-      <div class="announcement-content">
+      <div class="announcement-content" #firstContent>
         <ng-container [ngTemplateOutlet]="announcementContent"
           [ngTemplateOutletContext]="{ isDuplicate: false }"></ng-container>
       </div>

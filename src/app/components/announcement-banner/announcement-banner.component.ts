@@ -1,4 +1,4 @@
-import { Component, DestroyRef, OnInit, inject, signal } from '@angular/core';
+import { AfterViewInit, Component, DestroyRef, ElementRef, OnInit, inject, signal, viewChild } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { environment } from '../../../environments/environment';
@@ -9,6 +9,9 @@ import { LeaderboardEntry, LeaderboardService } from '../../services/leaderboard
 import { PlayerService } from '../../services/player.service';
 import { CharacterLevelUp, User } from '../../models/player.model';
 
+const SCROLL_SPEED_PX_PER_SECOND = 60;
+const MIN_SCROLL_DURATION_SECONDS = 20;
+
 @Component({
   selector: 'app-announcement-banner',
   standalone: true,
@@ -16,12 +19,14 @@ import { CharacterLevelUp, User } from '../../models/player.model';
   templateUrl: './announcement-banner.component.html',
   styleUrl: './announcement-banner.component.css'
 })
-export class AnnouncementBannerComponent implements OnInit {
+export class AnnouncementBannerComponent implements OnInit, AfterViewInit {
   protected readonly discordCommunicationsEnabled = !environment.devMode;
   protected readonly topCharacters = signal<LeaderboardEntry[]>([]);
   protected readonly topCharactersError = signal(false);
   protected readonly newestUser = signal<User | null>(null);
   protected readonly recentLevelUps = signal<CharacterLevelUp[]>([]);
+  protected readonly scrollDurationSeconds = signal(MIN_SCROLL_DURATION_SECONDS);
+  private readonly firstContent = viewChild<ElementRef<HTMLElement>>('firstContent');
   private readonly destroyRef = inject(DestroyRef);
   private readonly authService = inject(AuthService);
   private readonly leaderboardService = inject(LeaderboardService);
@@ -62,5 +67,20 @@ export class AnnouncementBannerComponent implements OnInit {
 
   protected newestUserName(user: User): string {
     return user.discordUsername || user.characters[0]?.characterName || user.discordUserId;
+  }
+
+  ngAfterViewInit(): void {
+    const content = this.firstContent()?.nativeElement;
+    if (!content || typeof ResizeObserver === 'undefined') {
+      return;
+    }
+
+    // The track scrolls one copy of the content width, so the duration is derived from that width to keep the speed constant.
+    const observer = new ResizeObserver(([entry]) => {
+      const width = entry.contentRect.width;
+      this.scrollDurationSeconds.set(Math.max(MIN_SCROLL_DURATION_SECONDS, width / SCROLL_SPEED_PX_PER_SECOND));
+    });
+    observer.observe(content);
+    this.destroyRef.onDestroy(() => observer.disconnect());
   }
 }

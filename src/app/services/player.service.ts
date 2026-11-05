@@ -157,7 +157,20 @@ export class PlayerService {
                     && previous.level < entry.level))
                 .sort((a, b) => b.recordedAt.localeCompare(a.recordedAt))
                 .slice(0, limit)
-                .map(({ characterId, characterName, level, recordedAt }) => ({ characterId, characterName, level, recordedAt }));
+                .map(entry => {
+                    const previous = MOCK_CHARACTER_LEVEL_HISTORY
+                        .filter(candidate => candidate.characterId === entry.characterId
+                            && candidate.recordedAt < entry.recordedAt
+                            && candidate.level < entry.level)
+                        .sort((a, b) => b.recordedAt.localeCompare(a.recordedAt))[0];
+                    return {
+                        characterId: entry.characterId,
+                        characterName: entry.characterName,
+                        previousLevel: previous.level,
+                        level: entry.level,
+                        recordedAt: entry.recordedAt
+                    };
+                });
             return of(levelUps);
         }
 
