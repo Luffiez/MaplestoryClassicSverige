@@ -28,6 +28,13 @@ export interface UserSummary {
     topUserIds: number[];
 }
 
+export interface CharacterLevelUp {
+    characterId: number;
+    characterName: string;
+    level: number;
+    recordedAt: string;
+}
+
 export interface UserStats {
     totalUsers: number;
     totalCharacters: number;

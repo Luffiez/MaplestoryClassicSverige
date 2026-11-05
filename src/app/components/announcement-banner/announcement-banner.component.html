@@ -20,6 +20,19 @@
         } @else if (topCharactersError()) {
         <span>Topplistan kunde inte laddas.</span>
         }
+
+        @if (newestUser(); as user) {
+        <span class="newest-user">Nyaste medlemmen: <a routerLink="/players" [attr.tabindex]="isDuplicate ? -1 : null"><em>{{ newestUserName(user) }}</em></a></span>
+        }
+
+        @if (recentLevelUps().length > 0) {
+        <span class="level-ups">Senaste level-ups:
+          @for (levelUp of recentLevelUps(); track $index) {
+          <a routerLink="/players" [queryParams]="{ search: levelUp.characterName }"
+            [attr.tabindex]="isDuplicate ? -1 : null"><em>{{ levelUp.characterName }} (lvl {{ levelUp.level }})</em></a>
+          }
+        </span>
+        }
       </ng-template>
       <div class="announcement-content">
         <ng-container [ngTemplateOutlet]="announcementContent"

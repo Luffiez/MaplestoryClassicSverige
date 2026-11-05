@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
-import { Observable, of, retry, throwError, timer } from 'rxjs';
-import { User, UserSummary, UserStats, PaginatedResponse, PartyListResponse } from '../models/player.model';
+import { Observable, of, retry, switchMap, throwError, timer } from 'rxjs';
+import { User, UserSummary, UserStats, PaginatedResponse, PartyListResponse, CharacterLevelUp } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
 import { MOCK_AUTH_USER, MOCK_USERS } from '../mocks/mock-users';
@@ -136,6 +136,27 @@ export class PlayerService {
         return this.retryTransientErrors(this.http.get<PartyListResponse>(`${environment.backendUrl}/api/parties`, {
             headers: this.getHeaders()
         }));
+    }
+
+    getNewestUser(): Observable<User | null> {
+        return this.getUsers(0, 1).pipe(
+            switchMap(first => first.totalCount === 0
+                ? of(null)
+                : this.getUsers(first.totalCount - 1, 1).pipe(
+                    switchMap(last => of(last.items[0] ?? null))
+                ))
+        );
+    }
+
+    getRecentLevelUps(limit = 3): Observable<CharacterLevelUp[]> {
+        if (environment.devMode) {
+            return of([]);
+        }
+
+        return this.retryTransientErrors(this.http.get<CharacterLevelUp[]>(
+            `${environment.backendUrl}/api/characters/level-history/recent?limit=${limit}`,
+            { headers: this.getHeaders() }
+        ));
     }
 
     getCurrentUser(): Observable<User> {
