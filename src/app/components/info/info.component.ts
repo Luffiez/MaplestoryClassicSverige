@@ -7,12 +7,12 @@ interface BotCommand {
 }
 
 @Component({
-    selector: 'app-bot-commands',
+    selector: 'app-info',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    templateUrl: './bot-commands.component.html',
-    styleUrl: './bot-commands.component.css'
+    templateUrl: './info.component.html',
+    styleUrl: './info.component.css'
 })
-export class BotCommandsComponent {
+export class InfoComponent {
     protected readonly commands: BotCommand[] = [
 
         {

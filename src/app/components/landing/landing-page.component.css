@@ -3,10 +3,6 @@
 }
 
 .content-panel {
-    position: relative;
-    z-index: 1;
-    padding: 2.5rem 2.25rem 2.75rem;
-    background: rgba(255, 255, 255, 0.82);
     align-items: center;
     display: flex;
     flex-direction: column;

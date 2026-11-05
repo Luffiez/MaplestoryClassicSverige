@@ -29,8 +29,7 @@
 }
 
 .navbar,
-.mobile-nav,
-.content-panel {
+.mobile-nav {
     position: relative;
     z-index: 1;
 }
@@ -170,11 +169,6 @@
     background: linear-gradient(180deg, #f2a0a0 0%, #d95f5f 100%);
     color: #fffdf7;
     text-shadow: 1px 1px 0 #8f2f2f;
-}
-
-.content-panel {
-    padding: 2.5rem 2.25rem 2.75rem;
-    background: rgba(255, 255, 255, 0.82);
 }
 
 .hero-block {
@@ -389,7 +383,4 @@
         margin-top: -3px;
     }
 
-    .content-panel {
-        padding: 1.5rem 1rem 2rem;
-    }
 }

@@ -1,11 +1,24 @@
-<main class="commands-page" aria-labelledby="commands-title">
-    <header class="section-heading">
-        <h1 id="commands-title">Discord-guide</h1>
-        <p class="section-description">
-            Här hittar du kommandona som hjälper dig att synka karaktärer och se spelarinformation.
-            Skriv kommandot i en Discord-kanal där boten är tillgänglig.
+<main class="content-panel">
+    <section class="info-section" aria-labelledby="how-it-works-title">
+        <h2 id="how-it-works-title">Hur fungerar det?</h2>
+        <p>
+            När du länkar din Maplestory-karaktär så hämmtas karaktärsinformation ifrån den inofficiella ranking-sidan, <a
+                href="https://classicrank.com/" target="_blank" rel="noopener noreferrer"> classicrank.com</a>. <br>
+            Varje dag uppdateras informationen automatiskt för att spegla de senaste förändringarna. Om din level eller gear
+            inte ser rätt ut, så är det för att ranking-sidan inte är up-to-date.
         </p>
-    </header>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="commands-section" aria-labelledby="commands-title">
+        <header class="section-heading">
+            <h2 id="commands-title">Discord-kommandon</h2>
+            <p class="section-description">
+                Här hittar du kommandona som hjälper dig att synka karaktärer och se spelarinformation.
+                Skriv kommandot i en Discord-kanal där boten är tillgänglig.
+            </p>
+        </header>
 
     <ul class="command-list" aria-label="Discord-botens kommandon">
         @for (command of commands; track command.name) {
@@ -19,4 +32,5 @@
         </li>
         }
     </ul>
+    </section>
 </main>

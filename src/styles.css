@@ -46,6 +46,19 @@ app-root {
     width: min(1200px, 100%);
 }
 
+.content-panel {
+    position: relative;
+    z-index: 1;
+    padding: 1rem 1.25rem 1.25rem;
+    background: rgba(255, 255, 255, 0.82);
+}
+
+@media (max-width: 600px) {
+    .content-panel {
+        padding: 1rem 0.75rem;
+    }
+}
+
 h1,
 h2,
 h3,

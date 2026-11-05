@@ -3,15 +3,45 @@
     color: #392918;
 }
 
-.commands-page {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 2rem;
-}
-
 .section-heading {
     margin-bottom: 1.5rem;
-    text-align: center;
+    text-align: left;
+}
+
+.info-section {
+    margin: 0;
+    text-align: left;
+}
+
+.info-section h2,
+.commands-section h2 {
+    margin: 0 0 0.75rem;
+    color: #392817;
+    font-size: clamp(1.3rem, 3vw, 1.8rem);
+    letter-spacing: 0.04em;
+}
+
+.info-section:first-child h2 {
+    margin-top: 1.5rem;
+}
+
+.info-section p {
+    margin: 0;
+    color: #51402f;
+    line-height: 1.7;
+}
+
+.info-section a {
+    color: #93621e;
+    font-weight: 700;
+}
+
+.section-divider {
+    width: 100%;
+    margin: 2.5rem 0;
+    border: 0;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #5a4124 20%, #5a4124 80%, transparent);
 }
 
 .eyebrow {
@@ -34,7 +64,7 @@ h1 {
 
 .section-description {
     max-width: 680px;
-    margin: 0.75rem auto 0;
+    margin: 0.75rem 0 0;
     color: #6b5747;
     line-height: 1.6;
 }
@@ -102,10 +132,6 @@ h1 {
 }
 
 @media (max-width: 600px) {
-    .commands-page {
-        padding: 1.5rem 0.75rem 2rem;
-    }
-
     .command-card {
         padding: 1rem;
     }

@@ -12,10 +12,11 @@ export const routes: Routes = [
     { path: 'players', component: PlayersListComponent, canActivate: [authGuard] },
     { path: 'party', component: PartiesComponent, canActivate: [authGuard] },
     {
-        path: 'botkommandon',
-        loadComponent: () => import('./components/bot-commands/bot-commands.component').then(component => component.BotCommandsComponent),
+        path: 'info',
+        loadComponent: () => import('./components/info/info.component').then(component => component.InfoComponent),
         canActivate: [authGuard]
     },
+    { path: 'botkommandon', redirectTo: 'info' },
     { path: '', component: LandingPageComponent },
     { path: '**', redirectTo: '' }
 ];
