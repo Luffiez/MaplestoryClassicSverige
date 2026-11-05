@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "../.."
+		},
+		{
+			"path": "../../../MaplestoryClassicDiscordBot/MaplestoryClassicDiscordBot"
+		}
+	],
+	"settings": {
+		"ollacoder.agent.autoApprove": {
+			"list_directory": true
+		}
+	}
+}

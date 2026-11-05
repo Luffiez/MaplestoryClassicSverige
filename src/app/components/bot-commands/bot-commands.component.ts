@@ -56,6 +56,11 @@ export class BotCommandsComponent {
             details: 'Använd kommandot i Discord när du vill lämna den aktuella träningsgruppen på kartan.'
         },
         {
+            name: '/leave',
+            description: 'Ta bort all din data från boten: synkade karaktärer, partymedlemskap och smeknamnet på servern.',
+            details: 'Använd kommandot i Discord för att ta bort all data som boten har sparat om dig. Du måste bekräfta innan något tas bort.'
+        },
+        {
             name: '/partylist',
             description: 'Visa listan över alla kartor som spelare för närvarande tränar på.',
             details: 'Använd kommandot i Discord för att se vilka kartor spelare är aktiva på.'
