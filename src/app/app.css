@@ -279,6 +279,10 @@
     background: linear-gradient(180deg, #f4f0e8 0%, #cbc2b3 100%);
 }
 
+.top-bar .nav-links a.active:hover {
+    background: linear-gradient(180deg, #fbc4c4 0%, #f08a8a 100%);
+}
+
 .auth-buttons .mute-toggle {
     min-width: 46px;
 }
