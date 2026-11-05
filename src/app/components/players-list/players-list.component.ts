@@ -5,6 +5,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
 import { Character, User, UserSummary } from '../../models/player.model';
+import { getJobIconUrl } from '../../job-icon';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
@@ -195,6 +196,10 @@ export class PlayersListComponent implements OnInit {
 
     getClassBackground(className: string): string | null {
         return CLASS_BACKGROUND_URLS[className.trim().toLowerCase()] ?? null;
+    }
+
+    getJobIcon(job: string): string | null {
+        return getJobIconUrl(job);
     }
 
     getPlayerDisplayName(player: User): string {

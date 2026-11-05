@@ -222,7 +222,7 @@ h2 {
 
 .ranking-row {
     display: grid;
-    grid-template-columns: 3rem minmax(0, 1fr) 9rem 4.5rem;
+    grid-template-columns: 3rem minmax(0, 1fr) 11rem 4.5rem;
     gap: 0.75rem;
     align-items: center;
     padding: 0.5rem 0.9rem;

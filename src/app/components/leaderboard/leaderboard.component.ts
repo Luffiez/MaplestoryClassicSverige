@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { LeaderboardEntry, LeaderboardService } from '../../services/leaderboard.service';
+import { getJobIconUrl } from '../../job-icon';
 
 @Component({
     selector: 'app-leaderboard',
@@ -14,6 +15,7 @@ export class LeaderboardComponent implements OnInit {
     private readonly leaderboardService = inject(LeaderboardService);
 
     protected readonly podiumPlaces = [0, 1, 2];
+    protected readonly getJobIcon = getJobIconUrl;
     protected readonly leaders = signal<LeaderboardEntry[]>([]);
     protected readonly isLoading = signal(true);
     protected readonly error = signal<string | null>(null);

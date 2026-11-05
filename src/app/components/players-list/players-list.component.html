@@ -96,7 +96,12 @@
                             <div class="character-info">
                                 <div class="character-details">
                                     <span><strong>Level:</strong> {{ character.level }}</span>
-                                    <span><strong>Job:</strong> {{ character.job }}</span>
+                                    <span><strong>Job:</strong>
+                                        @if (getJobIcon(character.job); as icon) {
+                                            <img class="job-icon" [src]="icon" alt="" />
+                                        }
+                                        {{ character.job }}
+                                    </span>
                                     <span *ngIf="character.rank"><strong>Official Rank:</strong> {{ character.rank }}</span>
                                     <span *ngIf="player.sverigeRank"><strong>Sverige Rank:</strong> {{ player.sverigeRank }}</span>
                                     <span><strong>Uppdaterad:</strong> {{ character.lastSyncedAt | date:

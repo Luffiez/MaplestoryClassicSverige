@@ -59,6 +59,15 @@ app-root {
     }
 }
 
+.job-icon {
+    width: 18px;
+    height: 18px;
+    margin-right: 0.3rem;
+    vertical-align: middle;
+    align-self: center;
+    image-rendering: pixelated;
+}
+
 h1,
 h2,
 h3,
