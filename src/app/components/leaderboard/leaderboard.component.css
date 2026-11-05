@@ -74,7 +74,7 @@ h2 {
 .podium-scene {
     position: relative;
     height: 390px;
-    overflow: hidden;
+    overflow: visible;
     background: linear-gradient(180deg, #a8d8df 0%, #d9e8bb 58%, #84aa58 59%, #577642 100%);
 }
 
@@ -87,8 +87,8 @@ h2 {
     align-items: center;
     justify-content: center;
     gap: 0.3rem;
-    width: fit-content;
-    max-width: calc(100% - 0.75rem);
+    width: max-content;
+    max-width: min(calc(100vw - 2rem), 24rem);
     min-width: 0;
     padding: 0.2rem 0.45rem;
     transform: translateX(-50%);
@@ -253,7 +253,7 @@ h2 {
 
     .character-image,
     .character-placeholder {
-        bottom: calc(var(--podium-height) + 2.5rem);
+        bottom: calc(var(--podium-height) + 1rem);
     }
 
     .character-image {

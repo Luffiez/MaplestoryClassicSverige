@@ -1,7 +1,7 @@
 .parties-container {
     position: relative;
     z-index: 1;
-    padding: 20px;
+    padding: 0px 20px 10px 20px;
     max-width: 1200px;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.82);
@@ -18,6 +18,10 @@ h1 {
     color: #c00;
     border: 1px solid #fcc;
     margin-bottom: 20px;
+}
+
+.error-message button {
+    margin-left: 12px;
 }
 
 .loading,

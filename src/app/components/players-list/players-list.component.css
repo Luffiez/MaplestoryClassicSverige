@@ -1,7 +1,7 @@
 .players-container {
     position: relative;
     z-index: 1;
-    padding: 20px;
+    padding: 0px 20px 10px 20px;
     max-width: 1200px;
     margin: 0 auto;
     background: rgba(255, 255, 255, 0.82);
@@ -19,6 +19,10 @@ h1 {
     border: 1px solid #fcc;
     border-radius: 4px;
     margin-bottom: 20px;
+}
+
+.error-message button {
+    margin-left: 12px;
 }
 
 .presence-error {
@@ -149,6 +153,7 @@ h1 {
 }
 
 .created-date {
+    display: none;
     margin: 0 0 15px;
     color: #999;
     font-size: 14px;
@@ -189,6 +194,9 @@ h1 {
     align-items: stretch;
     min-width: 0;
     border: 1px solid #806333;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     box-shadow: 2px 2px 0 rgba(91, 63, 25, 0.22);
 }
 
@@ -201,11 +209,7 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    background:
-        linear-gradient(45deg, #e5dbc4 25%, transparent 25% 75%, #e5dbc4 75%),
-        linear-gradient(45deg, #e5dbc4 25%, #f8f1df 25% 75%, #e5dbc4 75%);
-    background-position: 0 0, 5px 5px;
-    background-size: 10px 10px;
+    background: transparent;
     border: none;
     color: #705c39;
     font-size: 12px;
@@ -229,7 +233,7 @@ h1 {
 .character-name {
     margin: 0;
     padding: 4px 5px;
-    background: linear-gradient(180deg, #5b5142, #393329);
+    background: linear-gradient(180deg, rgba(91, 81, 66, 0.82), rgba(57, 51, 41, 0.88));
     color: #fff;
     font-size: 13px;
     font-weight: 600;
@@ -289,21 +293,31 @@ h1 {
 }
 
 .pagination button {
-    padding: 8px 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    background: linear-gradient(180deg, #fff8d8 0%, #f5e6b5 100%);
+    color: #5a4124;
+    border: 2px solid #806333;
+    box-shadow: 0 3px 0 #967143;
     cursor: var(--clickable-cursor);
-    font-size: 14px;
+    font-family: inherit;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
 }
 
 .pagination button:hover:not(:disabled) {
-    background-color: #0056b3;
+    background: #f0d99b;
+    transform: translateY(1px);
+    box-shadow: 0 2px 0 #967143;
 }
 
 .pagination button:disabled {
-    background-color: #ccc;
+    background: #e4dcc7;
+    color: #a89d87;
+    border-color: #b7a98c;
+    box-shadow: 0 3px 0 #b7a98c;
     cursor: not-allowed;
 }
 
@@ -318,7 +332,15 @@ h1 {
     }
 }
 
-@media (max-width: 480px) {
+@media (max-width: 700px) {
+    .player-character-count {
+        display: none;
+    }
+
+    .created-date {
+        display: block;
+    }
+
     .character-details {
         grid-template-columns: 1fr;
     }
@@ -362,6 +384,18 @@ h1 {
     margin-bottom: 16px;
 }
 
+.filters-toggle {
+    display: none;
+}
+
+.filters-controls {
+    display: flex;
+    flex: 1;
+    align-items: end;
+    gap: 12px;
+    min-width: 0;
+}
+
 .search-bar {
     flex: 1;
     min-width: 0;
@@ -379,8 +413,9 @@ h1 {
 
 .filter-field {
     display: flex;
-    flex: 0 0 240px;
+    flex: 0 1 240px;
     flex-direction: column;
+    min-width: 0;
     gap: 4px;
     color: #4d3b2a;
     font-size: 14px;
@@ -390,17 +425,49 @@ h1 {
 .filter-select {
     width: 100%;
     box-sizing: border-box;
-    padding: 10px 12px;
+    appearance: none;
+    padding: 10px 36px 10px 12px;
     border: 2px solid #4d3b2a;
     background: #fffdf7;
+    background-image:
+        linear-gradient(45deg, transparent 50%, #4d3b2a 50%),
+        linear-gradient(135deg, #4d3b2a 50%, transparent 50%);
+    background-position:
+        calc(100% - 16px) 50%,
+        calc(100% - 11px) 50%;
+    background-repeat: no-repeat;
+    background-size: 5px 5px;
     color: #333;
     font-size: 15px;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 700px) {
     .filters-bar {
         align-items: stretch;
         flex-direction: column;
+    }
+
+    .filters-toggle {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        padding: 10px 12px;
+        border: 2px solid #4d3b2a;
+        background: #fffdf7;
+        color: #4d3b2a;
+        font: inherit;
+        font-weight: 600;
+        cursor: var(--clickable-cursor);
+    }
+
+    .filters-controls {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .filters-controls.filters-collapsed {
+        display: none;
     }
 
     .filter-field {

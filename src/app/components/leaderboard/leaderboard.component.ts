@@ -1,12 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { NgOptimizedImage } from '@angular/common';
-import { Character, User } from '../../models/player.model';
-import { PlayerService } from '../../services/player.service';
-
-interface LeaderboardEntry {
-    player: User;
-    character: Character;
-}
+import { LeaderboardEntry, LeaderboardService } from '../../services/leaderboard.service';
 
 @Component({
     selector: 'app-leaderboard',
@@ -16,8 +10,7 @@ interface LeaderboardEntry {
     styleUrl: './leaderboard.component.css'
 })
 export class LeaderboardComponent implements OnInit {
-    private readonly playerService = inject(PlayerService);
-    private readonly pageSize = 100;
+    private readonly leaderboardService = inject(LeaderboardService);
 
     protected readonly podiumPlaces = [0, 1, 2];
     protected readonly leaders = signal<LeaderboardEntry[]>([]);
@@ -32,35 +25,9 @@ export class LeaderboardComponent implements OnInit {
         this.leaders.set([]);
         this.error.set(null);
         this.isLoading.set(true);
-        this.loadPage(0, []);
-    }
-
-    private loadPage(offset: number, accumulatedUsers: User[]): void {
-        this.playerService.getUsers(offset, this.pageSize).subscribe({
-            next: (response) => {
-                const users = [...accumulatedUsers, ...response.items];
-                const nextOffset = offset + response.items.length;
-
-                if (nextOffset < response.totalCount && response.items.length > 0) {
-                    this.loadPage(nextOffset, users);
-                    return;
-                }
-
-                if (nextOffset < response.totalCount) {
-                    this.error.set('Kunde inte läsa in alla spelare. Försök igen senare.');
-                    this.isLoading.set(false);
-                    return;
-                }
-
-                const entries = users.flatMap((player) => {
-                    const character = player.characters.reduce<Character | null>(
-                        (highest, current) => highest === null || current.level > highest.level ? current : highest,
-                        null
-                    );
-                    return character ? [{ player, character }] : [];
-                });
-
-                this.leaders.set(entries.sort((a, b) => b.character.level - a.character.level).slice(0, 3));
+        this.leaderboardService.getTopCharacters().subscribe({
+            next: (entries) => {
+                this.leaders.set(entries);
                 this.isLoading.set(false);
             },
             error: (err: unknown) => {

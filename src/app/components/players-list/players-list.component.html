@@ -2,37 +2,46 @@
     <h1>Medlemmar</h1>
     <p>Här listas alla medlemmar som vid något tillfälle registrerat någon av sina karaktärer. </p>
     <div class="filters-bar">
-        <div class="search-bar">
-            <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
-                aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
+        <button class="filters-toggle" type="button" [attr.aria-expanded]="filtersExpanded()"
+            aria-controls="player-filters" (click)="filtersExpanded.set(!filtersExpanded())">
+            Filtrering <span aria-hidden="true">{{ filtersExpanded() ? '−' : '+' }}</span>
+        </button>
+        <div id="player-filters" class="filters-controls" [class.filters-collapsed]="!filtersExpanded()">
+            <div class="search-bar">
+                <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
+                    aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
+            </div>
+            <label class="filter-field">
+                <select class="filter-select" aria-label="Filtrera medlemmar efter karaktärsjobb"
+                    [value]="selectedJob()" (change)="onJobFilter($any($event.target).value)">
+                    <option value="">Alla jobb</option>
+                    <option *ngFor="let job of availableJobs()" [value]="job">{{ job }}</option>
+                </select>
+            </label>
+            <label class="filter-field">
+                <select class="filter-select" aria-label="Sortera medlemmar" [value]="selectedSort()"
+                    (change)="onSortChange($any($event.target).value)">
+                    <option value="default">Standardordning</option>
+                    <option value="created-asc">Medlemsålder ↑</option>
+                    <option value="created-desc">Medlemsålder ↓</option>
+                    <option value="level-asc">Karaktärslevel ↑</option>
+                    <option value="level-desc">Karaktärslevel ↓</option>
+                </select>
+            </label>
         </div>
-        <label class="filter-field">
-            Jobb
-            <select class="filter-select" aria-label="Filtrera medlemmar efter karaktärsjobb" [value]="selectedJob()"
-                (change)="onJobFilter($any($event.target).value)">
-                <option value="">Alla jobb</option>
-                <option *ngFor="let job of availableJobs()" [value]="job">{{ job }}</option>
-            </select>
-        </label>
-        <label class="filter-field">
-            Sortera efter
-            <select class="filter-select" aria-label="Sortera medlemmar" [value]="selectedSort()"
-                (change)="onSortChange($any($event.target).value)">
-                <option value="default">Standardordning</option>
-                <option value="created-asc">Medlemsålder ↑</option>
-                <option value="created-desc">Medlemsålder ↓</option>
-                <option value="level-asc">Karaktärslevel ↑</option>
-                <option value="level-desc">Karaktärslevel ↓</option>
-            </select>
-        </label>
     </div>
 
     <div *ngIf="presenceError()" class="presence-error" role="status" aria-live="polite">
         Närvarostatus kunde inte hämtas. Status visas som okänd tills anslutningen fungerar igen.
     </div>
 
+    <div *ngIf="nicknameError()" class="presence-error" role="status" aria-live="polite">
+        Ett eller flera smeknamn kunde inte hämtas. Visar Discord-namnen i stället.
+    </div>
+
     <div *ngIf="error()" class="error-message">
         {{ error() }}
+        <button type="button" class="retry-button" (click)="loadPlayers()">Försök igen</button>
     </div>
 
     <div *ngIf="isLoading()" class="loading">
@@ -54,7 +63,7 @@
                         [class.unknown]="onlineUserIds() === null" role="img"
                         [attr.aria-label]="getPresenceLabel(player.discordUserId)"
                         [title]="getPresenceLabel(player.discordUserId)"></span>
-                    <span class="player-name">{{ player.discordUsername || player.discordUserId }}</span>
+                    <span class="player-name">{{ getPlayerDisplayName(player) }}</span>
                     <img *ngIf="playerTrophies().get(player.id) as trophy" class="player-trophy" [ngSrc]="trophy.src"
                         [alt]="trophy.alt" width="32" height="32" />
                 </span>
@@ -65,12 +74,17 @@
             </summary>
 
             <div class="player-body">
+                <p class="created-date">
+                    Medlem sedan: {{ player.createdAt | date: 'short' }}
+                </p>
                 <a class="discord-link" [href]="'https://discord.com/users/' + player.discordUserId" target="_blank"
-                    rel="noopener noreferrer">Öppna discord profil ↗</a>
+                    rel="noopener noreferrer">Öppna discord profil, @{{ player.discordUsername || player.discordUserId
+                    }} ↗</a>
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
                         <div class="character-item" *ngFor="let character of player.characters">
-                            <div class="character-portrait">
+                            <div class="character-portrait"
+                                [style.background-image]="getClassBackground(character.class)">
                                 <div class="character-image"
                                     *ngIf="character.characterImageUrl; else missingCharacterImage">
                                     <img [src]="character.characterImageUrl" [alt]="character.characterName" />
@@ -105,8 +119,8 @@
     </div>
 
     <div class="pagination" *ngIf="!isLoading() && players().length > 0">
-        <button (click)="previousPage()" [disabled]="currentOffset() === 0">Previous</button>
-        <span>Page starting at offset: {{ currentOffset() }}</span>
-        <button (click)="nextPage()" [disabled]="!hasMorePlayers()">Next</button>
+        <button (click)="previousPage()" [disabled]="currentOffset() === 0" aria-label="Previous page">&lt;</button>
+        <span>page {{ currentOffset() / pageSize + 1 }}</span>
+        <button (click)="nextPage()" [disabled]="!hasMorePlayers()" aria-label="Next page">&gt;</button>
     </div>
 </div>

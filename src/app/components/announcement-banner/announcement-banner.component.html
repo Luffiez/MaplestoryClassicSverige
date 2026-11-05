@@ -1,0 +1,34 @@
+<div class="announcement-banner">
+  <div class="announcement-viewport" role="status" aria-label="Community announcement">
+    <div class="announcement-track">
+      <ng-template #announcementContent let-isDuplicate="isDuplicate">
+        <span><strong>Välkommen till MapleStory Classic Sverige!</strong></span>
+        <span>Gå till <a routerLink="/players" [attr.tabindex]="isDuplicate ? -1 : null"><em>Medlemmar</em></a> för att
+          se de senaste karaktärsuppdateringarna.</span>
+
+        <span>Vill du hitta någon att döda svampar med? Kika på <a routerLink="/party"
+            [attr.tabindex]="isDuplicate ? -1 : null"><em>Party</em></a> för att
+          se vart andra medlemmar tränar någonstans!</span>
+
+        @if (topCharacters().length > 0) {
+        <span class="top-characters">Top 3:
+          @for (entry of topCharacters(); track entry.character.id; let index = $index) {
+          <a routerLink="/players" [queryParams]="{ search: entry.character.characterName }"
+            [attr.tabindex]="isDuplicate ? -1 : null"><em>{{ index + 1 }}. {{ entry.character.characterName }}</em></a>
+          }
+        </span>
+        } @else if (topCharactersError()) {
+        <span>Topplistan kunde inte laddas.</span>
+        }
+      </ng-template>
+      <div class="announcement-content">
+        <ng-container [ngTemplateOutlet]="announcementContent"
+          [ngTemplateOutletContext]="{ isDuplicate: false }"></ng-container>
+      </div>
+      <div class="announcement-content" aria-hidden="true">
+        <ng-container [ngTemplateOutlet]="announcementContent"
+          [ngTemplateOutletContext]="{ isDuplicate: true }"></ng-container>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, of, throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { Observable, of, retry, throwError, timer } from 'rxjs';
 import { User, PaginatedResponse, PartyListResponse } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
@@ -24,6 +24,21 @@ export class PlayerService {
             headers = headers.set('Authorization', `Bearer ${token}`);
         }
         return headers;
+    }
+
+    private retryTransientErrors<T>(request: Observable<T>): Observable<T> {
+        return request.pipe(
+            retry({
+                count: 2,
+                delay: (error, retryCount) => {
+                    if (!(error instanceof HttpErrorResponse) || (error.status !== 0 && error.status < 500)) {
+                        return throwError(() => error);
+                    }
+
+                    return timer(retryCount * 1_000);
+                }
+            })
+        );
     }
 
     getUsers(offset?: number, limit?: number): Observable<PaginatedResponse<User>> {
@@ -52,9 +67,9 @@ export class PlayerService {
             url += '?' + params.toString();
         }
 
-        return this.http.get<PaginatedResponse<User>>(url, {
+        return this.retryTransientErrors(this.http.get<PaginatedResponse<User>>(url, {
             headers: this.getHeaders()
-        });
+        }));
     }
 
     getOnlineUserIds(): Observable<string[]> {
@@ -89,9 +104,9 @@ export class PlayerService {
             return of({ maps, totalMaps: maps.length, totalMembers: maps.reduce((sum, map) => sum + map.members.length, 0) });
         }
 
-        return this.http.get<PartyListResponse>(`${environment.backendUrl}/api/parties`, {
+        return this.retryTransientErrors(this.http.get<PartyListResponse>(`${environment.backendUrl}/api/parties`, {
             headers: this.getHeaders()
-        });
+        }));
     }
 
     getCurrentUser(): Observable<User> {
@@ -102,5 +117,18 @@ export class PlayerService {
         return this.http.get<User>(`${this.apiUrl}/me`, {
             headers: this.getHeaders()
         });
+    }
+
+    getUserNickname(discordUserId: string): Observable<{ nickname: string | null }> {
+        if (environment.devMode) {
+            return of({ nickname: null });
+        }
+
+        return this.http.get<{ nickname: string | null }>(
+            `${this.apiUrl}/${encodeURIComponent(discordUserId)}/nickname`,
+            {
+                headers: this.getHeaders()
+            }
+        );
     }
 }
