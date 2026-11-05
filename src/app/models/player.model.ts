@@ -19,6 +19,7 @@ export interface User {
     discordUserId: string;
     discordUsername?: string | null;
     createdAt: string;
+    sverigeRank: number | null;
     characters: Character[];
 }
 

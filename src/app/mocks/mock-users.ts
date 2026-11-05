@@ -15,6 +15,7 @@ export const MOCK_USERS: User[] = [
         discordUserId: MOCK_AUTH_USER.id,
         discordUsername: MOCK_AUTH_USER.username,
         createdAt: '2026-01-12T18:30:00Z',
+        sverigeRank: 1,
         characters: [
             {
                 id: 1,
@@ -53,6 +54,7 @@ export const MOCK_USERS: User[] = [
         discordUserId: '100000000000000002',
         discordUsername: 'HenesisLocal',
         createdAt: '2026-02-03T11:00:00Z',
+        sverigeRank: 3,
         characters: [
             {
                 id: 3,
@@ -76,6 +78,7 @@ export const MOCK_USERS: User[] = [
         discordUserId: '100000000000000003',
         discordUsername: 'SleepywoodTester',
         createdAt: '2026-03-18T16:20:00Z',
+        sverigeRank: 2,
         characters: []
     },
     {
@@ -83,6 +86,7 @@ export const MOCK_USERS: User[] = [
         discordUserId: '100000000000000002',
         discordUsername: 'EliniaLocal',
         createdAt: '2026-02-03T11:00:00Z',
+        sverigeRank: 4,
         characters: [
             {
                 id: 3,

@@ -100,8 +100,9 @@
                                 <div class="character-details">
                                     <span><strong>Level:</strong> {{ character.level }}</span>
                                     <span><strong>Job:</strong> {{ character.job }}</span>
-                                    <span *ngIf="character.rank"><strong>Rank:</strong> {{ character.rank }}</span>
-                                    <span><strong>Senast synkad:</strong> {{ character.lastSyncedAt | date:
+                                    <span *ngIf="character.rank"><strong>Official Rank:</strong> {{ character.rank }}</span>
+                                    <span *ngIf="player.sverigeRank"><strong>Sverige Rank:</strong> {{ player.sverigeRank }}</span>
+                                    <span><strong>Uppdaterad:</strong> {{ character.lastSyncedAt | date:
                                         'short'}}</span>
                                 </div>
                             </div>
