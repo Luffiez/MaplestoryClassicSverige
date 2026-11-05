@@ -15,8 +15,10 @@ export class LandingPageComponent implements OnInit {
     readonly discordInviteUrl = environment.discordInviteUrl;
 
     ngOnInit(): void {
-        if (this.authService.isAuthenticated()) {
-            this.router.navigate(['/home']);
-        }
+        this.authService.waitForAuthInitialization().subscribe(isAuthenticated => {
+            if (isAuthenticated) {
+                this.router.navigate(['/home']);
+            }
+        });
     }
 }
