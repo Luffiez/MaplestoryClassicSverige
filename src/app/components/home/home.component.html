@@ -27,5 +27,43 @@
             </div>
         </div>
     </div>
+
+    <div class="stats">
+        @for (classCount of s.classCounts; track classCount.class) {
+        <div class="stat">
+            @if (classIcon(classCount.class); as icon) {
+            <img class="stat-icon" [src]="icon" alt="" />
+            }
+            <div>
+                <p class="stat-value">{{ classCount.count }}</p>
+                <p class="stat-label">{{ classCount.class }}</p>
+            </div>
+        </div>
+        }
+    </div>
+
+    <div class="stats">
+        <div class="stat">
+            <img class="stat-icon" src="event-trophy-gold.png" alt="" />
+            <div>
+                <p class="stat-value">{{ s.maxLevel ?? '-' }}</p>
+                <p class="stat-label">Högsta level</p>
+            </div>
+        </div>
+        <div class="stat">
+            <img class="stat-icon" src="event-trophy-bronze.png" alt="" />
+            <div>
+                <p class="stat-value">{{ s.minLevel ?? '-' }}</p>
+                <p class="stat-label">Lägsta level</p>
+            </div>
+        </div>
+        <div class="stat">
+            <img class="stat-icon" src="event-trophy-silver.png" alt="" />
+            <div>
+                <p class="stat-value">{{ s.medianLevel ?? '-' }}</p>
+                <p class="stat-label">Median level</p>
+            </div>
+        </div>
+    </div>
     }
 </main>

@@ -90,9 +90,21 @@ export class PlayerService {
 
     getUserStats(): Observable<UserStats> {
         if (environment.devMode) {
+            const characters = MOCK_USERS.flatMap(user => user.characters);
+            const levels = characters.map(character => character.level).sort((a, b) => a - b);
+            const middle = Math.floor(levels.length / 2);
+            const classCounts = new Map<string, number>();
+            characters.forEach(character => classCounts.set(character.class, (classCounts.get(character.class) ?? 0) + 1));
+
             return of({
                 totalUsers: MOCK_USERS.length,
-                totalCharacters: MOCK_USERS.reduce((sum, user) => sum + user.characters.length, 0)
+                totalCharacters: characters.length,
+                classCounts: [...classCounts].map(([characterClass, count]) => ({ class: characterClass, count })),
+                maxLevel: levels.length ? levels[levels.length - 1] : null,
+                minLevel: levels.length ? levels[0] : null,
+                medianLevel: levels.length
+                    ? levels.length % 2 ? levels[middle] : (levels[middle - 1] + levels[middle]) / 2
+                    : null
             });
         }
 

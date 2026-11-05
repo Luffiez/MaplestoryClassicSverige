@@ -3,6 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of } from 'rxjs';
 import { AuthService } from '../../services/auth/auth.service';
 import { PlayerService } from '../../services/player.service';
+import { getJobIconUrl } from '../../job-icon';
 @Component({
     selector: 'app-home',
     standalone: true,
@@ -16,4 +17,8 @@ export class HomeComponent {
     protected readonly stats = toSignal(
         this.playerService.getUserStats().pipe(catchError(() => of(null)))
     );
+
+    protected classIcon(characterClass: string): string | null {
+        return getJobIconUrl(characterClass);
+    }
 }

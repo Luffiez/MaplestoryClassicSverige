@@ -43,9 +43,18 @@ export interface CharacterLevelUp {
     recordedAt: string;
 }
 
+export interface ClassCount {
+    class: string;
+    count: number;
+}
+
 export interface UserStats {
     totalUsers: number;
     totalCharacters: number;
+    classCounts: ClassCount[];
+    maxLevel: number | null;
+    minLevel: number | null;
+    medianLevel: number | null;
 }
 
 export interface PaginatedResponse<T> {
