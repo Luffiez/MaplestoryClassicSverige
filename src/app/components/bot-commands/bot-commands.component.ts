@@ -28,7 +28,7 @@ export class BotCommandsComponent {
         {
             name: '/check {discordUsername}',
             description: 'Visa information om en spelares synkade MapleStory-karaktär.',
-            details: 'Använd kommandot i Discord för att visa karaktärsinformation som har synkats av en spelare.'
+            details: 'Använd kommandot i Discord för att visa karaktärsinformation som har synkats av en spelare. Svaret syns bara för dig som kör kommandot.'
         },
         {
             name: '/nickname {nickname}',
@@ -43,7 +43,7 @@ export class BotCommandsComponent {
         {
             name: '/leaderboards',
             description: 'Visa varje Discord-användares karaktär med högst nivå bland de synkade karaktärerna.',
-            details: 'Använd kommandot i Discord för att visa topplistan baserad på användarnas högsta synkade karaktärsnivå.'
+            details: 'Använd kommandot i Discord för att visa topplistan baserad på användarnas högsta synkade karaktärsnivå. Svaret syns bara för dig som kör kommandot.'
         },
         {
             name: '/joinparty {mapName}',

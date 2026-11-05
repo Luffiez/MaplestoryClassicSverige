@@ -1,13 +1,13 @@
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink } from '@angular/router';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { AuthService } from './services/auth/auth.service';
 import { AnnouncementBannerComponent } from './components/announcement-banner/announcement-banner.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, RouterLink, MatIconModule, AnnouncementBannerComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatIconModule, AnnouncementBannerComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
