@@ -1,12 +1,88 @@
 <main class="content-panel">
+    <section class="info-section quickstart-section" aria-labelledby="getting-started-title">
+        <h2 id="getting-started-title">Komma igång</h2>
+        <p>
+            Du behöver vara medlem i Discord-servern Maplestory Classic Sverige för att kunna logga in på sidan.
+            Så här kommer du igång:
+        </p>
+        <ol class="quickstart-steps">
+            <li>
+                <strong>Gå med i Discord-servern.</strong>
+                Utan medlemskap går det inte att logga in.
+            </li>
+            <li>
+                <strong>Logga in på sidan med ditt Discord-konto.</strong>
+                Du kommer till Discord för att godkänna inloggningen.
+            </li>
+            <li>
+                <strong>Gå till Maplebot-kanalen på Discord-servern.</strong>
+                Där kan du använda botens kommandon.
+            </li>
+            <li>
+                <strong>Länka din karaktär med <code>/sync &#123;characterName&#125;</code>.</strong>
+                Om flera karaktärer matchar namnet får du välja rätt karaktär i listan. Vill du ange världen kan du göra
+                det i fältet för världsnamn.
+            </li>
+            <li>
+                <strong>Kontrollera att det stämmer.</strong>
+                Din karaktär visas på <a routerLink="/players">Medlemmar</a>-sidan och med <code>/check</code> i
+                Discord.
+            </li>
+        </ol>
+    </section>
+
+    <hr class="section-divider">
+
     <section class="info-section" aria-labelledby="how-it-works-title">
         <h2 id="how-it-works-title">Hur fungerar det?</h2>
         <p>
-            När du länkar din Maplestory-karaktär så hämmtas karaktärsinformation ifrån den inofficiella ranking-sidan, <a
-                href="https://classicrank.com/" target="_blank" rel="noopener noreferrer"> classicrank.com</a>. <br>
-            Varje dag uppdateras informationen automatiskt för att spegla de senaste förändringarna. Om din level eller gear
-            inte ser rätt ut, så är det för att ranking-sidan inte är up-to-date.
+            Karaktärsinformationen hämtas från den inofficiella ranking-sidan
+            <a href="https://classicrank.com/" target="_blank" rel="noopener noreferrer">classicrank.com</a>.
         </p>
+        <ul class="info-list">
+            <li>
+                <strong>Uppdateras en gång per dag.</strong>
+                Uppdateringen sker automatiskt kl. 16:00 UTC, vilket motsvarar 17:00 svensk vintertid eller 18:00 svensk
+                sommartid.
+            </li>
+            <li>
+                <strong>Fel level eller gear?</strong>
+                Det beror på att ranking-sidan inte är uppdaterad än. Informationen följer med när den uppdateras.
+            </li>
+        </ul>
+    </section>
+
+    <hr class="section-divider">
+
+    <section class="info-section" aria-labelledby="good-to-know-title">
+        <h2 id="good-to-know-title">Bra att veta</h2>
+        <ul class="info-list">
+            <li>
+                <strong>Primär karaktär.</strong>
+                Med <code>/setprimary</code> väljer du vilken synkad karaktär som används för din Discord-profil. Klass
+                och level från den karaktären visas i ditt smeknamn på servern.
+            </li>
+            <li>
+                <strong>Ta bort data.</strong>
+                Med <code>/desync</code> tar du bort en enskild karaktär. Med <code>/leave</code> tar du bort all din
+                data från boten, men du måste bekräfta först.
+            </li>
+            <li>
+                <strong>Partyn går ut automatiskt.</strong>
+                Din markering med <code>/joinparty</code> tas bort efter 12 timmar, eller när du kör
+                <code>/leaveparty</code>.
+            </li>
+            <li>
+                <strong>Flera träffar vid synk.</strong>
+                Om flera karaktärer matchar namnet får du välja i listan. Listan visar upp till 25 träffar. Ange världen
+                för att snäva av sökningen.
+            </li>
+            <li>
+                <strong>Vad andra ser.</strong>
+                Dina synkade karaktärer visas för andra medlemmar på <a routerLink="/players">Medlemmar</a>-sidan. Svar
+                från <code>/check</code> och <code>/leaderboards</code> syns bara för den som kör kommandot.
+            </li>
+        </ul>
     </section>
 
     <hr class="section-divider">
@@ -16,21 +92,24 @@
             <h2 id="commands-title">Discord-kommandon</h2>
             <p class="section-description">
                 Här hittar du kommandona som hjälper dig att synka karaktärer och se spelarinformation.
-                Skriv kommandot i en Discord-kanal där boten är tillgänglig.
+                Skriv kommandot i <a href="https://discord.com/channels/582568356410949655/1556728718716702790"
+                    target="_blank">maplebot-kanalen</a> i Discord. Listan med alla kommandon går även att se ifall du
+                skriver / i kanalen.
             </p>
         </header>
 
-    <ul class="command-list" aria-label="Discord-botens kommandon">
-        @for (command of commands; track command.name) {
-        <li>
-            <article class="command-card">
-                <div class="command-heading">
-                    <code>{{ command.name }}</code>
-                    <p>{{ command.description }}</p>
+        @for (group of commandGroups; track group.title) {
+        <div class="command-group">
+            <h3>{{ group.title }}</h3>
+            <dl class="command-items" [attr.aria-label]="'Kommandon: ' + group.title">
+                @for (command of group.commands; track command.name) {
+                <div class="command-item">
+                    <dt><code>{{ command.name }}</code></dt>
+                    <dd>{{ command.description }}</dd>
                 </div>
-            </article>
-        </li>
+                }
+            </dl>
+        </div>
         }
-    </ul>
     </section>
 </main>

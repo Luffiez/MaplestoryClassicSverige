@@ -139,6 +139,7 @@ p {
     gap: 1rem;
     padding: 1rem 1.25rem;
     border: 3px solid #4d3b2a;
+    border-radius: 14px;
     background: #fffdf7;
     box-shadow: 0 4px 0 #8b5a1a;
 }
