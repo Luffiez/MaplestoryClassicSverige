@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
-import { User, UserSummary } from '../../models/player.model';
+import { Character, User, UserSummary } from '../../models/player.model';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
@@ -99,7 +99,8 @@ export class PlayersListComponent implements OnInit {
                     ? 'Guldpokal, 1:a plats på topplistan'
                     : index === 1
                         ? 'Silverpokal, 2:a plats på topplistan'
-                        : 'Bronspokal, 3:e plats på topplistan'
+                        : 'Bronspokal, 3:e plats på topplistan',
+                 title: `Sverige rank ${index + 1}`
             }
         ]));
     });
@@ -200,6 +201,14 @@ export class PlayersListComponent implements OnInit {
         return this.userNicknames().get(player.discordUserId)
             || player.discordUsername
             || player.discordUserId;
+    }
+
+    isTopCharacter(player: User, character: Character): boolean {
+        const highest = player.characters.reduce<Character | null>(
+            (best, current) => best === null || current.level > best.level ? current : best,
+            null
+        );
+        return highest === character;
     }
 
     loadPlayers(): void {

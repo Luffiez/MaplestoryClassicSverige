@@ -64,12 +64,6 @@
                         [attr.aria-label]="getPresenceLabel(player.discordUserId)"
                         [title]="getPresenceLabel(player.discordUserId)"></span>
                     <span class="player-name">{{ getPlayerDisplayName(player) }}</span>
-                    <img *ngIf="playerTrophies().get(player.id) as trophy" class="player-trophy" [ngSrc]="trophy.src"
-                        [alt]="trophy.alt" width="32" height="32" />
-                </span>
-
-                <span class="player-character-count">
-                    Medlem sedan: {{ player.createdAt | date: 'short' }}
                 </span>
             </summary>
 
@@ -95,6 +89,9 @@
                                     </div>
                                 </ng-template>
                                 <h4 class="character-name">{{ character.characterName }}</h4>
+                                <img *ngIf="isTopCharacter(player, character) && playerTrophies().get(player.id) as trophy"
+                                    class="character-trophy" [ngSrc]="trophy.src" [alt]="trophy.alt"
+                                    [title]="trophy.title" width="48" height="48" />
                             </div>
                             <div class="character-info">
                                 <div class="character-details">
