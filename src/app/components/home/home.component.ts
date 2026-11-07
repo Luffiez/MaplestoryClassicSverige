@@ -17,6 +17,17 @@ export class HomeComponent {
     protected readonly stats = toSignal(
         this.playerService.getUserStats().pipe(catchError(() => of(null)))
     );
+    protected readonly classBars = computed(() => {
+        const counts = [...(this.stats()?.classCounts ?? [])].sort((a, b) => b.count - a.count);
+        const max = counts[0]?.count ?? 0;
+        const total = counts.reduce((sum, classCount) => sum + classCount.count, 0);
+        return counts.map(classCount => ({
+            class: classCount.class,
+            count: classCount.count,
+            width: max > 0 ? (classCount.count / max) * 100 : 0,
+            share: total > 0 ? Math.round((classCount.count / total) * 1000) / 10 : 0
+        }));
+    });
 
     protected classIcon(characterClass: string): string | null {
         return getJobIconUrl(characterClass);

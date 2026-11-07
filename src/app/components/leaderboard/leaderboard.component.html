@@ -49,24 +49,44 @@
         </li>
         }
     </ol>
-    @if (leaders().length > 0) {
-    <ol class="ranking-list" aria-label="Alla karaktärer i Sverige rankade efter karaktärsnivå">
-        @for (entry of leaders(); track $index; let rank = $index) {
-        <li class="ranking-item">
-            <a class="ranking-row" routerLink="/players"
-                [queryParams]="{ search: entry.player.discordUsername || entry.player.discordUserId }"
-                title="Visa medlemmens profil">
-                <span class="ranking-position">{{ rank + 1 }}</span>
-                <span class="ranking-name">{{ entry.character.characterName }}</span>
-                <span class="ranking-job">
-                    @if (getJobIcon(entry.character.class); as icon) {
-                        <img class="job-icon" [src]="icon" alt="" />
-                    }
-                    {{ entry.character.job }}
-                </span>
-                <span class="ranking-level">Lv {{ entry.character.level }}</span>
-            </a>
+    @if (leaders().length > 0 || classOptions().length > 0) {
+    <div class="ranking-table">
+        @if (classOptions().length > 0) {
+        <div class="class-filter" role="group" aria-label="Filtrera topplistan efter klass">
+            <button type="button" class="class-filter-button" [class.active]="selectedClass() === ''"
+                [attr.aria-pressed]="selectedClass() === ''" (click)="selectClass('')">Alla</button>
+            @for (characterClass of classOptions(); track characterClass) {
+            <button type="button" class="class-filter-button" [class.active]="selectedClass() === characterClass"
+                [attr.aria-pressed]="selectedClass() === characterClass" (click)="selectClass(characterClass)">
+                @if (getJobIcon(characterClass); as icon) {
+                <img class="job-icon" [src]="icon" alt="" />
+                }
+                {{ characterClass }}
+            </button>
+            }
+        </div>
         }
-    </ol>
+        @if (leaders().length > 0) {
+        <ol class="ranking-list" aria-label="Alla karaktärer i Sverige rankade efter karaktärsnivå">
+            @for (entry of leaders(); track $index; let rank = $index) {
+            <li class="ranking-item">
+                <a class="ranking-row" routerLink="/players"
+                    [queryParams]="{ search: entry.player.discordUsername || entry.player.discordUserId }"
+                    title="Visa medlemmens profil">
+                    <span class="ranking-position">{{ rank + 1 }}</span>
+                    <span class="ranking-name">{{ entry.character.characterName }}</span>
+                    <span class="ranking-job">
+                        @if (getJobIcon(entry.character.class); as icon) {
+                            <img class="job-icon" [src]="icon" alt="" />
+                        }
+                        {{ entry.character.job }}
+                    </span>
+                    <span class="ranking-level">Lv {{ entry.character.level }}</span>
+                </a>
+            </li>
+            }
+        </ol>
+        }
+    </div>
     }
 </section>

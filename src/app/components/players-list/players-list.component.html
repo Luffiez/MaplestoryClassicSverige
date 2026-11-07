@@ -28,6 +28,10 @@
                     <option value="level-desc">Karaktärslevel ↓</option>
                 </select>
             </label>
+            <label class="filter-field filter-checkbox">
+                <input type="checkbox" [checked]="favoritesOnly()" (change)="onFavoritesOnlyChange($any($event.target).checked)" />
+                <span>Endast favoriter ({{ favorites.count() }})</span>
+            </label>
         </div>
         <button class="history-button compare-open" type="button" (click)="openCompare()">Jämför karaktärer</button>
     </div>
@@ -66,15 +70,31 @@
                         [title]="getPresenceLabel(player.discordUserId)"></span>
                     <span class="player-name">{{ getPlayerDisplayName(player) }}</span>
                 </span>
+                <button type="button" class="favorite-button" [class.active]="isFavorite(player)"
+                    [attr.aria-pressed]="isFavorite(player)" [attr.aria-label]="getFavoriteLabel(player)"
+                    [title]="getFavoriteLabel(player)" (click)="onFavoriteClick($event, player)">
+                    {{ isFavorite(player) ? '★' : '☆' }}
+                </button>
             </summary>
 
             <div class="player-body">
-                <p class="created-date">
-                    Medlem sedan: {{ player.createdAt | date: 'short' }}
-                </p>
+                <div class="profile-meta">
+                    <p class="created-date">
+                        Medlem sedan: {{ player.createdAt | date: 'short' }}
+                    </p>
+                    <button type="button" class="share-button" (click)="copyProfileLink(player)">
+                        <svg class="share-icon" viewBox="0 0 24 24" aria-hidden="true">
+                            <circle cx="18" cy="5" r="3" />
+                            <circle cx="6" cy="12" r="3" />
+                            <circle cx="18" cy="19" r="3" />
+                            <path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4" />
+                        </svg>
+                        {{ getShareLabel(player) }}
+                    </button>
+                </div>
+                <span class="sr-only" aria-live="polite">{{ copyStatus()?.discordUserId === player.discordUserId ? getShareLabel(player) : '' }}</span>
                 <a class="discord-link" [href]="'https://discord.com/users/' + player.discordUserId" target="_blank"
-                    rel="noopener noreferrer">Öppna discord profil, @{{ player.discordUsername || player.discordUserId
-                    }} ↗</a>
+                    rel="noopener noreferrer"><img class="discord-icon" src="discord-ogo.png" alt="" aria-hidden="true" />Öppna discord profil</a>
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
                         <div class="character-item" *ngFor="let character of player.characters">
@@ -115,7 +135,18 @@
                                 </div>
                             </div>
                             <div class="character-footer">
-                                <button type="button" class="history-button" (click)="openHistory(character)">Mer info</button>
+                                <a class="history-button shop-link" [href]="getShopUrl(character.characterName)" target="_blank"
+                                    rel="noopener noreferrer">
+                                    <img src="store-permit.png" alt="" aria-hidden="true" />
+                                    meso.watch
+                                </a>
+                                <button type="button" class="history-button" (click)="openHistory(character)">
+                                    <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true">
+                                        <circle cx="12" cy="12" r="9" />
+                                        <path d="M12 7v5l3 2" />
+                                    </svg>
+                                    Historik
+                                </button>
                             </div>
                         </div>
                     </div>

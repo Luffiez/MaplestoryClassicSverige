@@ -4,11 +4,20 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
+import { FavoritesService } from '../../services/favorites.service';
 import { Character, CharacterLevelHistoryEntry, User, UserSummary } from '../../models/player.model';
 import { getJobIconUrl } from '../../job-icon';
 import { LEVEL_GAIN_WINDOW_DAYS, LEVEL_HISTORY_RANGES, LevelHistoryRange, buildLevelChart, getLevelGainSince, selectLevelHistoryRange } from '../../character-level-history';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
+
+interface PlayerUrlState {
+    search: string;
+    job: string;
+    sort: PlayerSort;
+    favoritesOnly: boolean;
+    page: number;
+}
 
 interface CompareCandidate {
     id: number;
@@ -67,6 +76,8 @@ export class PlayersListComponent implements OnInit {
     searchQuery = signal('');
     selectedJob = signal('');
     selectedSort = signal<PlayerSort>('default');
+    favoritesOnly = signal(false);
+    copyStatus = signal<{ discordUserId: string; success: boolean } | null>(null);
     currentOffset = signal(0);
     pageSize = 10;
     private readonly fetchSize = 100;
@@ -183,6 +194,7 @@ export class PlayersListComponent implements OnInit {
     filteredPlayers = computed(() => {
         const query = this.searchQuery().trim().toLowerCase();
         const selectedJob = this.selectedJob().trim().toLowerCase();
+        const favoriteIds = this.favorites.getFavoriteIds();
 
         return this.allPlayers().filter(player => {
             const matchesSearch = !query
@@ -192,8 +204,9 @@ export class PlayersListComponent implements OnInit {
                 || player.characters.some(character => character.characterName.toLowerCase().includes(query));
             const matchesJob = !selectedJob
                 || player.characters.some(character => character.job.trim().toLowerCase() === selectedJob);
+            const matchesFavorites = !this.favoritesOnly() || favoriteIds.has(player.discordUserId);
 
-            return matchesSearch && matchesJob;
+            return matchesSearch && matchesJob && matchesFavorites;
         });
     });
     sortedPlayers = computed(() => {
@@ -233,7 +246,9 @@ export class PlayersListComponent implements OnInit {
             }
         ]));
     });
-    isFiltering = computed(() => Boolean(this.searchQuery().trim() || this.selectedJob() || this.selectedSort() !== 'default'));
+    isFiltering = computed(() => Boolean(
+        this.searchQuery().trim() || this.selectedJob() || this.selectedSort() !== 'default' || this.favoritesOnly()
+    ));
     players = computed(() => {
         if (!this.isFiltering()) {
             return this.sortedPlayers();
@@ -247,7 +262,8 @@ export class PlayersListComponent implements OnInit {
     constructor(
         private playerService: PlayerService,
         private route: ActivatedRoute,
-        private router: Router
+        private router: Router,
+        readonly favorites: FavoritesService
     ) {
         effect(() => {
             const visiblePlayers = this.players();
@@ -265,7 +281,9 @@ export class PlayersListComponent implements OnInit {
                     ? sort
                     : 'default'
             );
-            this.currentOffset.set(0);
+            this.favoritesOnly.set(params.get('favorites') === '1');
+            const page = Math.max(1, Number.parseInt(params.get('page') ?? '', 10) || 1);
+            this.currentOffset.set((page - 1) * this.pageSize);
             this.loadPlayers();
         });
         this.loadSummary();
@@ -483,50 +501,108 @@ export class PlayersListComponent implements OnInit {
     }
 
     onSearch(value: string): void {
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: {
-                search: value.trim() || null,
-                job: this.selectedJob() || null,
-                sort: this.selectedSort() === 'default' ? null : this.selectedSort()
-            },
-            replaceUrl: true
-        });
+        this.updateUrl({ search: value.trim() });
     }
 
     onJobFilter(value: string): void {
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: {
-                search: this.searchQuery().trim() || null,
-                job: value || null,
-                sort: this.selectedSort() === 'default' ? null : this.selectedSort()
-            },
-            replaceUrl: true
-        });
+        this.updateUrl({ job: value });
     }
 
     onSortChange(value: PlayerSort): void {
-        this.router.navigate([], {
-            relativeTo: this.route,
-            queryParams: {
-                search: this.searchQuery().trim() || null,
-                job: this.selectedJob() || null,
-                sort: value === 'default' ? null : value
-            },
-            replaceUrl: true
-        });
+        this.updateUrl({ sort: value });
+    }
+
+    onFavoritesOnlyChange(checked: boolean): void {
+        this.updateUrl({ favoritesOnly: checked });
+    }
+
+    onFavoriteClick(event: Event, player: User): void {
+        // The button sits inside <summary>, so keep the click from also toggling the card.
+        event.preventDefault();
+        event.stopPropagation();
+        this.favorites.toggle(player.discordUserId);
+    }
+
+    isFavorite(player: User): boolean {
+        return this.favorites.isFavorite(player.discordUserId);
+    }
+
+    getFavoriteLabel(player: User): string {
+        return this.isFavorite(player)
+            ? `Ta bort ${this.getPlayerDisplayName(player)} från favoriter`
+            : `Lägg till ${this.getPlayerDisplayName(player)} i favoriter`;
+    }
+
+    getShareLabel(player: User): string {
+        const status = this.copyStatus();
+        if (status?.discordUserId !== player.discordUserId) {
+            return 'Dela profil';
+        }
+        return status.success ? 'Länk kopierad!' : 'Kunde inte kopiera';
+    }
+
+    getShopUrl(characterName: string): string {
+        return 'https://meso.watch/s/' + encodeURIComponent(characterName);
+    }
+
+    async copyProfileLink(player: User): Promise<void> {
+        const search = player.discordUsername || player.discordUserId;
+        const path = this.router.serializeUrl(this.router.createUrlTree(['/players'], { queryParams: { search } }));
+        const url = new URL(path, window.location.origin).toString();
+
+        let success = false;
+        try {
+            await navigator.clipboard.writeText(url);
+            success = true;
+        } catch (error) {
+            console.error('Could not copy member link to clipboard.', error);
+        }
+
+        this.copyStatus.set({ discordUserId: player.discordUserId, success });
+        setTimeout(() => {
+            if (this.copyStatus()?.discordUserId === player.discordUserId) {
+                this.copyStatus.set(null);
+            }
+        }, 2500);
     }
 
     nextPage(): void {
         if (this.hasMorePlayers()) {
-            this.currentOffset.set(this.currentOffset() + this.pageSize);
-            this.loadPlayers();
+            this.updateUrl({ page: this.currentPage() + 1 });
         }
     }
 
     previousPage(): void {
-        this.currentOffset.set(Math.max(0, this.currentOffset() - this.pageSize));
-        this.loadPlayers();
+        if (this.currentPage() > 1) {
+            this.updateUrl({ page: this.currentPage() - 1 });
+        }
+    }
+
+    currentPage(): number {
+        return Math.floor(this.currentOffset() / this.pageSize) + 1;
+    }
+
+    private updateUrl(changes: Partial<PlayerUrlState>): void {
+        // Changing a filter resets pagination, so page defaults to 1 unless it is explicitly passed.
+        const state: PlayerUrlState = {
+            search: this.searchQuery().trim(),
+            job: this.selectedJob(),
+            sort: this.selectedSort(),
+            favoritesOnly: this.favoritesOnly(),
+            page: 1,
+            ...changes
+        };
+
+        this.router.navigate([], {
+            relativeTo: this.route,
+            queryParams: {
+                search: state.search || null,
+                job: state.job || null,
+                sort: state.sort === 'default' ? null : state.sort,
+                favorites: state.favoritesOnly ? '1' : null,
+                page: state.page > 1 ? state.page : null
+            },
+            replaceUrl: true
+        });
     }
 }

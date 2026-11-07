@@ -29,20 +29,6 @@
     </div>
 
     <div class="stats">
-        @for (classCount of s.classCounts; track classCount.class) {
-        <div class="stat">
-            @if (classIcon(classCount.class); as icon) {
-            <img class="stat-icon" [src]="icon" alt="" />
-            }
-            <div>
-                <p class="stat-value">{{ classCount.count }}</p>
-                <p class="stat-label">{{ classCount.class }}</p>
-            </div>
-        </div>
-        }
-    </div>
-
-    <div class="stats">
         <div class="stat">
             <img class="stat-icon" src="event-trophy-gold.png" alt="" />
             <div>
@@ -65,5 +51,25 @@
             </div>
         </div>
     </div>
+
+    <section class="class-distribution" aria-labelledby="class-distribution-title">
+        <h3 id="class-distribution-title">Klassfördelning</h3>
+        <ul class="class-bars">
+            @for (bar of classBars(); track bar.class) {
+            <li class="class-bar-row">
+                <span class="class-bar-name">
+                    @if (classIcon(bar.class); as icon) {
+                    <img class="class-bar-icon" [src]="icon" alt="" />
+                    }
+                    {{ bar.class }}
+                </span>
+                <span class="class-bar-track" aria-hidden="true">
+                    <span class="class-bar-fill" [style.width.%]="bar.width"></span>
+                </span>
+                <span class="class-bar-value">{{ bar.count }} ({{ bar.share }}%)</span>
+            </li>
+            }
+        </ul>
+    </section>
     }
 </main>
