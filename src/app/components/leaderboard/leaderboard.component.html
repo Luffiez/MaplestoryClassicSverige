@@ -59,7 +59,7 @@
                 <span class="ranking-position">{{ rank + 1 }}</span>
                 <span class="ranking-name">{{ entry.character.characterName }}</span>
                 <span class="ranking-job">
-                    @if (getJobIcon(entry.character.job); as icon) {
+                    @if (getJobIcon(entry.character.class); as icon) {
                         <img class="job-icon" [src]="icon" alt="" />
                     }
                     {{ entry.character.job }}

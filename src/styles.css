@@ -197,6 +197,43 @@ label,
     gap: 12px;
 }
 
+.compare-portraits {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+}
+
+.compare-portrait {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+}
+
+.compare-portrait img {
+    width: 100%;
+    max-height: 180px;
+    object-fit: contain;
+}
+
+.compare-portrait .missing-image {
+    width: 100%;
+    min-height: 120px;
+}
+
+.compare-portrait-name {
+    font-weight: 700;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.compare-vs {
+    width: 96px;
+    height: auto;
+}
+
 .compare-table-wrapper {
     overflow-x: auto;
 }
@@ -226,9 +263,24 @@ label,
     font-weight: 600;
 }
 
-.compare-table .compare-better {
-    color: #2e7d32;
+.compare-arrow-cell {
+    width: 1%;
+    white-space: nowrap;
+    padding-left: 4px;
+    padding-right: 0;
+    text-align: right;
+}
+
+.compare-arrow {
     font-weight: 700;
+}
+
+.compare-arrow-up {
+    color: #2e7d32;
+}
+
+.compare-arrow-down {
+    color: #c62828;
 }
 
 @media (max-width: 700px) {

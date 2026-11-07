@@ -27,6 +27,19 @@ const TYPE_ORDER: PatchNoteType[] = ['Nytt', 'Ändrat', 'Fix'];
 
 const PATCH_NOTES: PatchNoteEntry[] = [
     {
+        date: '2026-11-07',
+        items: [
+            { type: 'Nytt', text: 'Jämför-dialogen visar karaktärernas porträtt ovanför jämförelsen, med en VS-bild mellan dem.' },
+            { type: 'Nytt', text: 'Startsidan visar statistik per klass, samt högsta, lägsta och median-level.' },
+            { type: 'Nytt', text: 'Discord: alla synkade karaktärer uppdateras direkt när boten startar.' },
+            { type: 'Ändrat', text: 'Jämförelsen markerar bättre värden med en grön pil ▲ och sämre med en röd pil ▼.' },
+            { type: 'Ändrat', text: 'Discord: synkläget är borttaget och karaktärerna uppdateras automatiskt. /setmanual och /setlevel finns inte längre.' },
+            { type: 'Fix', text: 'Jobbikonerna i Topplistan och Medlemmar baseras nu på klassen i stället för jobbet.' },
+            { type: 'Fix', text: 'Discord: nivån i smeknamnet visas korrekt.' },
+            { type: 'Fix', text: 'Discord: profiluppdateringar avbryts efter en stund i stället för att låta kommandon hänga.' }
+        ]
+    },
+    {
         date: '2026-11-06',
         items: [
             { type: 'Nytt', text: 'Jämför karaktärer sida vid sida i en tabell på Medlemmar-sidan.' },

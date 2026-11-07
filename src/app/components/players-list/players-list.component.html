@@ -103,7 +103,7 @@
                                         }
                                     </span>
                                     <span><strong>Job:</strong>
-                                        @if (getJobIcon(character.job); as icon) {
+                                        @if (getJobIcon(character.class); as icon) {
                                             <img class="job-icon" [src]="icon" alt="" />
                                         }
                                         {{ character.job }}
@@ -204,12 +204,29 @@
                 </label>
             </div>
             @if (compareRows().length > 0) {
+            <div class="compare-portraits">
+                @for (side of [comparePair().left, comparePair().right]; track $index) {
+                @if ($index === 1) {
+                <img class="compare-vs" src="/vs.png" alt="mot" />
+                }
+                <div class="compare-portrait">
+                    @if (side?.character?.characterImageUrl; as imageUrl) {
+                    <img [src]="imageUrl" [alt]="side?.character?.characterName" />
+                    } @else {
+                    <div class="missing-image">Missing</div>
+                    }
+                    <span class="compare-portrait-name">{{ side?.character?.characterName }}</span>
+                </div>
+                }
+            </div>
             <div class="compare-table-wrapper">
                 <table class="compare-table">
                     <thead>
                         <tr>
                             <th scope="col">Egenskap</th>
+                            <th class="compare-arrow-cell" scope="col" aria-hidden="true"></th>
                             <th scope="col">{{ comparePair().left?.character?.characterName }}</th>
+                            <th class="compare-arrow-cell" scope="col" aria-hidden="true"></th>
                             <th scope="col">{{ comparePair().right?.character?.characterName }}</th>
                         </tr>
                     </thead>
@@ -217,14 +234,28 @@
                         @for (row of compareRows(); track row.label) {
                         <tr>
                             <th scope="row">{{ row.label }}</th>
-                            <td [class.compare-better]="row.better === 'left'">{{ row.left }}</td>
-                            <td [class.compare-better]="row.better === 'right'">{{ row.right }}</td>
+                            <td class="compare-arrow-cell">
+                                @if (row.better === 'left') {
+                                <span class="compare-arrow compare-arrow-up" aria-label="Bättre">▲</span>
+                                } @else if (row.better === 'right') {
+                                <span class="compare-arrow compare-arrow-down" aria-label="Sämre">▼</span>
+                                }
+                            </td>
+                            <td>{{ row.left }}</td>
+                            <td class="compare-arrow-cell">
+                                @if (row.better === 'right') {
+                                <span class="compare-arrow compare-arrow-up" aria-label="Bättre">▲</span>
+                                } @else if (row.better === 'left') {
+                                <span class="compare-arrow compare-arrow-down" aria-label="Sämre">▼</span>
+                                }
+                            </td>
+                            <td>{{ row.right }}</td>
                         </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <p class="history-summary">Grön markering visar vilken karaktär som ligger bäst till i respektive rad.</p>
+            <p class="history-summary">Grön pil ▲ visar vilken karaktär som ligger bäst till i respektive rad, röd pil ▼ visar den som ligger sämre till.</p>
             } @else {
             <p class="history-empty">{{ compareMessage() }}</p>
             }
