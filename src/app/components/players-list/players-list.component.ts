@@ -486,7 +486,7 @@ export class PlayersListComponent implements OnInit {
     }
 
     private loadServerPage(requestId: number): void {
-        this.playerService.getUsers(this.loadedServerCount, PAGE_SIZE).subscribe({
+        this.playerService.getUsers(this.loadedServerCount, this.fetchSize).subscribe({
             next: (response) => {
                 if (requestId !== this.loadRequestId) {
                     return;
