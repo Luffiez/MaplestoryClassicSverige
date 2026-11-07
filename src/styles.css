@@ -104,6 +104,17 @@ label,
     background: var(--retro-accent, #d18a2b);
 }
 
+.range-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.range-button[aria-pressed='true'] {
+    background: var(--retro-accent, #d18a2b);
+    color: #fffdf7;
+}
+
 .history-dialog {
     width: min(720px, calc(100vw - 32px));
     max-height: calc(100vh - 32px);

@@ -4,6 +4,18 @@ export const LEVEL_GAIN_WINDOW_DAYS = 7;
 
 const DAY_MS = 86_400_000;
 
+export interface LevelHistoryRange {
+    days: number;
+    label: string;
+    summary: string;
+}
+
+export const LEVEL_HISTORY_RANGES: readonly LevelHistoryRange[] = [
+    { days: LEVEL_GAIN_WINDOW_DAYS, label: '7 dagar', summary: 'senaste 7 dagarna' },
+    { days: 30, label: '30 dagar', summary: 'senaste 30 dagarna' },
+    { days: Number.POSITIVE_INFINITY, label: 'Full', summary: 'totalt' }
+];
+
 export interface LevelChartPoint {
     x: number;
     y: number;
@@ -44,6 +56,25 @@ export function getLevelGainSince(
     const baseline = [...sorted].reverse().find(entry => Date.parse(entry.recordedAt) <= windowStart) ?? sorted[0];
 
     return Math.max(0, latest.level - baseline.level);
+}
+
+/**
+ * Entries shown for a range. Keeps the baseline entry at or before the window start so the
+ * line begins at the level the character had when the window opened.
+ */
+export function selectLevelHistoryRange(
+    history: CharacterLevelHistoryEntry[],
+    days: number,
+    now = Date.now()
+): CharacterLevelHistoryEntry[] {
+    const sorted = sortByRecordedAt(history);
+    if (!Number.isFinite(days)) {
+        return sorted;
+    }
+
+    const windowStart = now - days * DAY_MS;
+    const baselineIndex = sorted.reduce((found, entry, index) => Date.parse(entry.recordedAt) <= windowStart ? index : found, -1);
+    return sorted.slice(Math.max(baselineIndex, 0));
 }
 
 export function buildLevelChart(

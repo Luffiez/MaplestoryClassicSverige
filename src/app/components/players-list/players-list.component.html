@@ -141,9 +141,16 @@
         @if (selectedHistoryCharacter(); as character) {
         <div class="history-dialog-content">
             <h2 id="history-dialog-title">Historik: {{ character.characterName }}</h2>
+            <div class="range-selector" role="group" aria-label="Tidsspann">
+                @for (range of levelHistoryRanges; track range.label) {
+                <button type="button" class="history-button range-button"
+                    [attr.aria-pressed]="selectedHistoryRange() === range"
+                    (click)="selectHistoryRange(range)">{{ range.label }}</button>
+                }
+            </div>
             <p class="history-summary">
                 Level nu: <strong>{{ character.level }}</strong>
-                · Levlar senaste {{ levelGainWindowDays }} dagarna: <strong>{{ getLevelGain(character) }}</strong>
+                · Levlar {{ selectedHistoryRange().summary }}: <strong>{{ getSelectedRangeGain(character) }}</strong>
             </p>
             @if (selectedHistoryChart(); as chart) {
             <svg class="level-chart" [attr.viewBox]="'0 0 ' + chart.width + ' ' + chart.height" role="img"

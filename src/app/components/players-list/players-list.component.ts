@@ -6,7 +6,7 @@ import { EMPTY, catchError, forkJoin, of, switchMap, timer } from 'rxjs';
 import { PlayerService } from '../../services/player.service';
 import { Character, CharacterLevelHistoryEntry, User, UserSummary } from '../../models/player.model';
 import { getJobIconUrl } from '../../job-icon';
-import { LEVEL_GAIN_WINDOW_DAYS, buildLevelChart, getLevelGainSince } from '../../character-level-history';
+import { LEVEL_GAIN_WINDOW_DAYS, LEVEL_HISTORY_RANGES, LevelHistoryRange, buildLevelChart, getLevelGainSince, selectLevelHistoryRange } from '../../character-level-history';
 
 type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
@@ -78,14 +78,16 @@ export class PlayersListComponent implements OnInit {
     private requestedHistoryIds = new Set<number>();
     private readonly historyDialog = viewChild<ElementRef<HTMLDialogElement>>('historyDialog');
     selectedHistoryCharacter = signal<Character | null>(null);
+    levelHistoryRanges = LEVEL_HISTORY_RANGES;
+    selectedHistoryRange = signal<LevelHistoryRange>(LEVEL_HISTORY_RANGES[0]);
     selectedHistoryChart = computed(() => {
         const character = this.selectedHistoryCharacter();
         if (!character) {
             return null;
         }
-        return buildLevelChart(this.characterHistories().get(character.id) ?? []);
+        const history = this.characterHistories().get(character.id) ?? [];
+        return buildLevelChart(selectLevelHistoryRange(history, this.selectedHistoryRange().days));
     });
-    levelGainWindowDays = LEVEL_GAIN_WINDOW_DAYS;
     private readonly compareDialog = viewChild<ElementRef<HTMLDialogElement>>('compareDialog');
     compareLeftId = signal<number | null>(null);
     compareRightId = signal<number | null>(null);
@@ -325,7 +327,16 @@ export class PlayersListComponent implements OnInit {
         return getLevelGainSince(this.characterHistories().get(character.id) ?? []);
     }
 
+    getSelectedRangeGain(character: Character): number {
+        return getLevelGainSince(this.characterHistories().get(character.id) ?? [], this.selectedHistoryRange().days);
+    }
+
+    selectHistoryRange(range: LevelHistoryRange): void {
+        this.selectedHistoryRange.set(range);
+    }
+
     openHistory(character: Character): void {
+        this.selectedHistoryRange.set(LEVEL_HISTORY_RANGES[0]);
         this.selectedHistoryCharacter.set(character);
         this.historyDialog()?.nativeElement.showModal();
     }
