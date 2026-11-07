@@ -1,0 +1,22 @@
+<div class="class-filter-wrap">
+    <button type="button" class="mobile-filter-toggle" (click)="toggleMobileFilter()"
+        [attr.aria-expanded]="mobileFilterOpen()" aria-controls="class-filter-menu"
+        [attr.aria-label]="mobileFilterOpen() ? 'Stäng klassfiltret' : 'Öppna klassfiltret'">
+        <mat-icon>{{ mobileFilterOpen() ? 'close' : 'menu' }}</mat-icon>
+        <span class="mobile-filter-label">{{ selectedClass() || 'Alla' }}</span>
+    </button>
+    <div id="class-filter-menu" class="class-filter" [class.open]="mobileFilterOpen()" role="group"
+        aria-label="Filtrera topplistan efter klass">
+        <button type="button" class="class-filter-button" [class.active]="selectedClass() === ''"
+            [attr.aria-pressed]="selectedClass() === ''" (click)="selectClass('')">Alla</button>
+        @for (characterClass of classOptions(); track characterClass) {
+        <button type="button" class="class-filter-button" [class.active]="selectedClass() === characterClass"
+            [attr.aria-pressed]="selectedClass() === characterClass" (click)="selectClass(characterClass)">
+            @if (getJobIcon(characterClass); as icon) {
+            <img class="job-icon" [src]="icon" alt="" />
+            }
+            {{ characterClass }}
+        </button>
+        }
+    </div>
+</div>

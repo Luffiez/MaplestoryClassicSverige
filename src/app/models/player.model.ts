@@ -57,6 +57,12 @@ export interface UserStats {
     medianLevel: number | null;
 }
 
+export interface DailyLevelUp {
+    date: string;
+    levelUps: number;
+    activeCharacters: number;
+}
+
 export interface PaginatedResponse<T> {
     items: T[];
     offset: number;
@@ -69,6 +75,9 @@ export interface PartyMember {
     discordUsername: string | null;
     characterName: string;
     isPrimaryCharacter: boolean;
+    level: number;
+    class: string;
+    job: string;
 }
 
 export interface PartyMonster {

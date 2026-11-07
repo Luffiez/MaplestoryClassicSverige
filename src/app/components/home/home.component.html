@@ -71,5 +71,53 @@
             }
         </ul>
     </section>
+
+    <section class="daily-stats" aria-labelledby="daily-stats-title">
+        <div class="daily-stats-header">
+            <h3 id="daily-stats-title">Aktivitet per dag</h3>
+            <div class="range-selector" role="group" aria-label="Tidsperiod">
+                @for (days of rangeOptions; track days) {
+                <button type="button" class="history-button range-button" [attr.aria-pressed]="selectedDays() === days"
+                    (click)="selectedDays.set(days)">
+                    {{ days }} dagar
+                </button>
+                }
+            </div>
+        </div>
+
+        @if (dailyFailed()) {
+        <p class="history-empty">Kunde inte ladda historiken just nu.</p>
+        } @else if (dailyCharts(); as charts) {
+        @for (item of charts; track item.id) {
+        <div class="daily-chart">
+            <h4>{{ item.title }}</h4>
+            <svg class="level-chart" [attr.viewBox]="'0 0 ' + item.chart.width + ' ' + item.chart.height" role="img"
+                [attr.aria-label]="item.title">
+                @for (tick of [0, item.chart.max]; track $index) {
+                <line class="grid-line" [attr.x1]="item.chart.plotLeft" [attr.x2]="item.chart.plotRight"
+                    [attr.y1]="tick === 0 ? item.chart.plotBottom : item.chart.plotTop"
+                    [attr.y2]="tick === 0 ? item.chart.plotBottom : item.chart.plotTop" />
+                <text class="axis-label" text-anchor="end" [attr.x]="item.chart.plotLeft - 6"
+                    [attr.y]="(tick === 0 ? item.chart.plotBottom : item.chart.plotTop) + 4">{{ tick }}</text>
+                }
+                <line class="axis-line" [attr.x1]="item.chart.plotLeft" [attr.x2]="item.chart.plotLeft"
+                    [attr.y1]="item.chart.plotTop" [attr.y2]="item.chart.plotBottom" />
+                <line class="axis-line" [attr.x1]="item.chart.plotLeft" [attr.x2]="item.chart.plotRight"
+                    [attr.y1]="item.chart.plotBottom" [attr.y2]="item.chart.plotBottom" />
+                @for (bar of item.chart.bars; track bar.date) {
+                <rect class="daily-bar" [attr.x]="bar.x" [attr.y]="bar.y" [attr.width]="bar.width"
+                    [attr.height]="bar.height">
+                    <title>{{ bar.date }}: {{ bar.value }}</title>
+                </rect>
+                @if (bar.showLabel) {
+                <text class="axis-label" text-anchor="middle" [attr.x]="bar.x + bar.width / 2"
+                    [attr.y]="item.chart.plotBottom + 18">{{ bar.label }}</text>
+                }
+                }
+            </svg>
+        </div>
+        }
+        }
+    </section>
     }
 </main>

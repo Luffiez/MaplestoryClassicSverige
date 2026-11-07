@@ -7,17 +7,18 @@ import { PlayerService } from '../../services/player.service';
 import { FavoritesService } from '../../services/favorites.service';
 import { Character, CharacterLevelHistoryEntry, User, UserSummary } from '../../models/player.model';
 import { getJobIconUrl } from '../../job-icon';
+import { CharacterCardComponent } from '../character-card/character-card.component';
+import { MemberView, PlayerSort, PlayersFilterBarComponent } from '../players-filter-bar/players-filter-bar.component';
 import { LEVEL_GAIN_WINDOW_DAYS, LEVEL_HISTORY_RANGES, LevelHistoryRange, buildLevelChart, getLevelGainSince, selectLevelHistoryRange } from '../../character-level-history';
-
-type PlayerSort = 'default' | 'created-asc' | 'created-desc' | 'level-asc' | 'level-desc';
 
 interface PlayerUrlState {
     search: string;
     job: string;
     sort: PlayerSort;
-    favoritesOnly: boolean;
-    page: number;
+    view: MemberView;
 }
+
+const PAGE_SIZE = 10;
 
 interface CompareCandidate {
     id: number;
@@ -59,7 +60,7 @@ function formatOptional(value: string | number | null | undefined): string {
 @Component({
     selector: 'app-players-list',
     standalone: true,
-    imports: [CommonModule, NgOptimizedImage],
+    imports: [CommonModule, CharacterCardComponent, PlayersFilterBarComponent],
     templateUrl: './players-list.component.html',
     styleUrl: './players-list.component.css'
 })
@@ -72,14 +73,15 @@ export class PlayersListComponent implements OnInit {
     presenceError = signal(false);
     nicknameError = signal(false);
     userNicknames = signal<ReadonlyMap<string, string>>(new Map());
-    filtersExpanded = signal(false);
     searchQuery = signal('');
     selectedJob = signal('');
     selectedSort = signal<PlayerSort>('default');
-    favoritesOnly = signal(false);
+    memberView = signal<MemberView>('all');
     copyStatus = signal<{ discordUserId: string; success: boolean } | null>(null);
-    currentOffset = signal(0);
-    pageSize = 10;
+    visibleCount = signal(PAGE_SIZE);
+    isLoadingMore = signal(false);
+    private loadedServerCount = 0;
+    private readonly loadSentinel = viewChild<ElementRef<HTMLElement>>('loadSentinel');
     private readonly fetchSize = 100;
     private userSummary = signal<UserSummary | null>(null);
     private serverTotalCount = signal(0);
@@ -204,9 +206,12 @@ export class PlayersListComponent implements OnInit {
                 || player.characters.some(character => character.characterName.toLowerCase().includes(query));
             const matchesJob = !selectedJob
                 || player.characters.some(character => character.job.trim().toLowerCase() === selectedJob);
-            const matchesFavorites = !this.favoritesOnly() || favoriteIds.has(player.discordUserId);
+            const view = this.memberView();
+            const matchesView = view === 'all'
+                || (view === 'favorites' && favoriteIds.has(player.discordUserId))
+                || (view === 'online' && (this.onlineUserIds()?.has(player.discordUserId) ?? false));
 
-            return matchesSearch && matchesJob && matchesFavorites;
+            return matchesSearch && matchesJob && matchesView;
         });
     });
     sortedPlayers = computed(() => {
@@ -247,17 +252,11 @@ export class PlayersListComponent implements OnInit {
         ]));
     });
     isFiltering = computed(() => Boolean(
-        this.searchQuery().trim() || this.selectedJob() || this.selectedSort() !== 'default' || this.favoritesOnly()
+        this.searchQuery().trim() || this.selectedJob() || this.selectedSort() !== 'default' || this.memberView() !== 'all'
     ));
-    players = computed(() => {
-        if (!this.isFiltering()) {
-            return this.sortedPlayers();
-        }
-
-        return this.sortedPlayers().slice(this.currentOffset(), this.currentOffset() + this.pageSize);
-    });
+    players = computed(() => this.sortedPlayers().slice(0, this.visibleCount()));
     totalCount = computed(() => this.isFiltering() ? this.sortedPlayers().length : this.serverTotalCount());
-    hasMorePlayers = computed(() => this.currentOffset() + this.pageSize < this.totalCount());
+    hasMorePlayers = computed(() => this.visibleCount() < this.totalCount());
 
     constructor(
         private playerService: PlayerService,
@@ -268,6 +267,20 @@ export class PlayersListComponent implements OnInit {
         effect(() => {
             const visiblePlayers = this.players();
             untracked(() => this.loadCharacterHistories(visiblePlayers));
+        });
+
+        effect(onCleanup => {
+            const sentinel = this.loadSentinel()?.nativeElement;
+            if (!sentinel) {
+                return;
+            }
+            const observer = new IntersectionObserver(entries => {
+                if (entries.some(entry => entry.isIntersecting)) {
+                    this.loadMore();
+                }
+            }, { rootMargin: '200px' });
+            observer.observe(sentinel);
+            onCleanup(() => observer.disconnect());
         });
     }
 
@@ -281,9 +294,12 @@ export class PlayersListComponent implements OnInit {
                     ? sort
                     : 'default'
             );
-            this.favoritesOnly.set(params.get('favorites') === '1');
-            const page = Math.max(1, Number.parseInt(params.get('page') ?? '', 10) || 1);
-            this.currentOffset.set((page - 1) * this.pageSize);
+            const view = params.get('view');
+            this.memberView.set(
+                view === 'favorites' || view === 'online'
+                    ? view
+                    : params.get('favorites') === '1' ? 'favorites' : 'all'
+            );
             this.loadPlayers();
         });
         this.loadSummary();
@@ -292,7 +308,6 @@ export class PlayersListComponent implements OnInit {
 
     private loadNicknames(users: User[]): void {
         const discordUserIds = Array.from(new Set(users.map(user => user.discordUserId)));
-        this.userNicknames.set(new Map());
         this.nicknameError.set(false);
 
         if (discordUserIds.length === 0) {
@@ -315,7 +330,7 @@ export class PlayersListComponent implements OnInit {
                     nicknames.set(discordUserIds[index], nickname);
                 }
             });
-            this.userNicknames.set(nicknames);
+            this.userNicknames.update(current => new Map([...current, ...nicknames]));
         });
     }
 
@@ -430,15 +445,36 @@ export class PlayersListComponent implements OnInit {
 
     loadPlayers(): void {
         const requestId = ++this.loadRequestId;
-        this.isLoading.set(true);
         this.error.set(null);
+        this.visibleCount.set(PAGE_SIZE);
 
         if (!this.isFiltering()) {
+            this.fullyLoaded = false;
+            this.loadedServerCount = 0;
+            this.allPlayers.set([]);
+            this.isLoading.set(true);
             this.loadServerPage(requestId);
         } else if (this.fullyLoaded) {
             this.isLoading.set(false);
         } else {
+            this.isLoading.set(true);
             this.loadPage(0, [], requestId);
+        }
+    }
+
+    loadMore(): void {
+        if (!this.hasMorePlayers()) {
+            return;
+        }
+
+        this.visibleCount.update(count => count + PAGE_SIZE);
+        const needsServerPage = !this.isFiltering()
+            && !this.isLoadingMore()
+            && this.loadedServerCount < this.serverTotalCount()
+            && this.allPlayers().length < this.visibleCount();
+        if (needsServerPage) {
+            this.isLoadingMore.set(true);
+            this.loadServerPage(this.loadRequestId);
         }
     }
 
@@ -450,20 +486,24 @@ export class PlayersListComponent implements OnInit {
     }
 
     private loadServerPage(requestId: number): void {
-        this.playerService.getUsers(this.currentOffset(), this.pageSize).subscribe({
+        this.playerService.getUsers(this.loadedServerCount, PAGE_SIZE).subscribe({
             next: (response) => {
                 if (requestId !== this.loadRequestId) {
                     return;
                 }
 
                 const items = response.items ?? [];
-                this.allPlayers.set(items);
-                this.serverTotalCount.set(response.totalCount ?? items.length);
-                this.fullyLoaded = false;
+                this.allPlayers.update(current => [...current, ...items]);
+                this.loadedServerCount += items.length;
+                this.serverTotalCount.set(response.totalCount ?? this.loadedServerCount);
                 this.loadNicknames(items);
                 this.isLoading.set(false);
+                this.isLoadingMore.set(false);
             },
-            error: (err) => this.handleLoadError(err, requestId)
+            error: (err) => {
+                this.isLoadingMore.set(false);
+                this.handleLoadError(err, requestId);
+            }
         });
     }
 
@@ -512,8 +552,8 @@ export class PlayersListComponent implements OnInit {
         this.updateUrl({ sort: value });
     }
 
-    onFavoritesOnlyChange(checked: boolean): void {
-        this.updateUrl({ favoritesOnly: checked });
+    onMemberViewChange(value: MemberView): void {
+        this.updateUrl({ view: value });
     }
 
     onFavoriteClick(event: Event, player: User): void {
@@ -541,6 +581,8 @@ export class PlayersListComponent implements OnInit {
         return status.success ? 'Länk kopierad!' : 'Kunde inte kopiera';
     }
 
+    readonly showShopLinks = false;
+
     getShopUrl(characterName: string): string {
         return 'https://meso.watch/s/' + encodeURIComponent(characterName);
     }
@@ -566,30 +608,12 @@ export class PlayersListComponent implements OnInit {
         }, 2500);
     }
 
-    nextPage(): void {
-        if (this.hasMorePlayers()) {
-            this.updateUrl({ page: this.currentPage() + 1 });
-        }
-    }
-
-    previousPage(): void {
-        if (this.currentPage() > 1) {
-            this.updateUrl({ page: this.currentPage() - 1 });
-        }
-    }
-
-    currentPage(): number {
-        return Math.floor(this.currentOffset() / this.pageSize) + 1;
-    }
-
     private updateUrl(changes: Partial<PlayerUrlState>): void {
-        // Changing a filter resets pagination, so page defaults to 1 unless it is explicitly passed.
         const state: PlayerUrlState = {
             search: this.searchQuery().trim(),
             job: this.selectedJob(),
             sort: this.selectedSort(),
-            favoritesOnly: this.favoritesOnly(),
-            page: 1,
+            view: this.memberView(),
             ...changes
         };
 
@@ -599,8 +623,7 @@ export class PlayersListComponent implements OnInit {
                 search: state.search || null,
                 job: state.job || null,
                 sort: state.sort === 'default' ? null : state.sort,
-                favorites: state.favoritesOnly ? '1' : null,
-                page: state.page > 1 ? state.page : null
+                view: state.view === 'all' ? null : state.view
             },
             replaceUrl: true
         });

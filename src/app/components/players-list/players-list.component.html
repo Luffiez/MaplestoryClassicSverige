@@ -1,40 +1,10 @@
 <div class="content-panel">
     <h1>Medlemmar</h1>
     <p>Här listas alla medlemmar som vid något tillfälle registrerat någon av sina karaktärer. </p>
-    <div class="filters-bar">
-        <button class="filters-toggle" type="button" [attr.aria-expanded]="filtersExpanded()"
-            aria-controls="player-filters" (click)="filtersExpanded.set(!filtersExpanded())">
-            Filtrering <span aria-hidden="true">{{ filtersExpanded() ? '−' : '+' }}</span>
-        </button>
-        <div id="player-filters" class="filters-controls" [class.filters-collapsed]="!filtersExpanded()">
-            <div class="search-bar">
-                <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
-                    aria-label="Sök medlemmar" [value]="searchQuery()" (input)="onSearch($any($event.target).value)" />
-            </div>
-            <label class="filter-field">
-                <select class="filter-select" aria-label="Filtrera medlemmar efter karaktärsjobb"
-                    [value]="selectedJob()" (change)="onJobFilter($any($event.target).value)">
-                    <option value="">Alla jobb</option>
-                    <option *ngFor="let job of availableJobs()" [value]="job">{{ job }}</option>
-                </select>
-            </label>
-            <label class="filter-field">
-                <select class="filter-select" aria-label="Sortera medlemmar" [value]="selectedSort()"
-                    (change)="onSortChange($any($event.target).value)">
-                    <option value="default">Standardordning</option>
-                    <option value="created-asc">Medlemsålder ↑</option>
-                    <option value="created-desc">Medlemsålder ↓</option>
-                    <option value="level-asc">Karaktärslevel ↑</option>
-                    <option value="level-desc">Karaktärslevel ↓</option>
-                </select>
-            </label>
-            <label class="filter-field filter-checkbox">
-                <input type="checkbox" [checked]="favoritesOnly()" (change)="onFavoritesOnlyChange($any($event.target).checked)" />
-                <span>Endast favoriter ({{ favorites.count() }})</span>
-            </label>
-        </div>
-        <button class="history-button compare-open" type="button" (click)="openCompare()">Jämför karaktärer</button>
-    </div>
+    <app-players-filter-bar [searchQuery]="searchQuery()" [selectedJob]="selectedJob()" [selectedSort]="selectedSort()"
+        [memberView]="memberView()" [availableJobs]="availableJobs()" [favoriteCount]="favorites.count()"
+        (searchChange)="onSearch($event)" (jobChange)="onJobFilter($event)" (sortChange)="onSortChange($event)"
+        (memberViewChange)="onMemberViewChange($event)" (compareOpen)="openCompare()" />
 
     <div *ngIf="presenceError()" class="presence-error" role="status" aria-live="polite">
         Närvarostatus kunde inte hämtas. Status visas som okänd tills anslutningen fungerar igen.
@@ -97,58 +67,12 @@
                     rel="noopener noreferrer"><img class="discord-icon" src="discord-ogo.png" alt="" aria-hidden="true" />Öppna discord profil</a>
                 <div class="characters-section" *ngIf="player.characters.length > 0">
                     <div class="character-list">
-                        <div class="character-item" *ngFor="let character of player.characters">
-                            <div class="character-portrait"
-                                [style.background-image]="getClassBackground(character.class)">
-                                <div class="character-image"
-                                    *ngIf="character.characterImageUrl; else missingCharacterImage">
-                                    <img [src]="character.characterImageUrl" [alt]="character.characterName" />
-                                </div>
-                                <ng-template #missingCharacterImage>
-                                    <div class="character-image missing-image" aria-label="Missing character image">
-                                        Missing
-                                    </div>
-                                </ng-template>
-                                <h4 class="character-name">{{ character.characterName }}</h4>
-                                <img *ngIf="isTopCharacter(player, character) && playerTrophies().get(player.id) as trophy"
-                                    class="character-trophy" [ngSrc]="trophy.src" [alt]="trophy.alt"
-                                    [title]="trophy.title" width="48" height="48" />
-                            </div>
-                            <div class="character-info">
-                                <div class="character-details">
-                                    <span><strong>Level:</strong> {{ character.level }}
-                                        @if (getLevelGain(character) > 0) {
-                                        <span class="level-gain" title="Levlar senaste 7 dagarna"
-                                            [attr.aria-label]="'Levlar senaste 7 dagarna: ' + getLevelGain(character)">↑ {{ getLevelGain(character) }}</span>
-                                        }
-                                    </span>
-                                    <span><strong>Job:</strong>
-                                        @if (getJobIcon(character.class); as icon) {
-                                            <img class="job-icon" [src]="icon" alt="" />
-                                        }
-                                        {{ character.job }}
-                                    </span>
-                                    <span *ngIf="character.rank"><strong>Official Rank:</strong> {{ character.rank }}</span>
-                                    <span *ngIf="player.sverigeRank"><strong>Sverige Rank:</strong> {{ player.sverigeRank }}</span>
-                                    <span><strong>Uppdaterad:</strong> {{ character.lastSyncedAt | date:
-                                        'short'}}</span>
-                                </div>
-                            </div>
-                            <div class="character-footer">
-                                <a class="history-button shop-link" [href]="getShopUrl(character.characterName)" target="_blank"
-                                    rel="noopener noreferrer">
-                                    <img src="store-permit.png" alt="" aria-hidden="true" />
-                                    meso.watch
-                                </a>
-                                <button type="button" class="history-button" (click)="openHistory(character)">
-                                    <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true">
-                                        <circle cx="12" cy="12" r="9" />
-                                        <path d="M12 7v5l3 2" />
-                                    </svg>
-                                    Historik
-                                </button>
-                            </div>
-                        </div>
+                        <app-character-card *ngFor="let character of player.characters" [character]="character"
+                            [sverigeRank]="player.sverigeRank" [levelGain]="getLevelGain(character)"
+                            [jobIcon]="getJobIcon(character.class)" [classBackground]="getClassBackground(character.class)"
+                            [trophy]="isTopCharacter(player, character) ? (playerTrophies().get(player.id) ?? null) : null"
+                            [shopUrl]="getShopUrl(character.characterName)" [showShopLinks]="showShopLinks"
+                            (historyRequested)="openHistory($event)" />
                     </div>
 
                 </div>
@@ -161,10 +85,8 @@
         </details>
     </div>
 
-    <div class="pagination" *ngIf="!isLoading() && players().length > 0">
-        <button (click)="previousPage()" [disabled]="currentOffset() === 0" aria-label="Previous page">&lt;</button>
-        <span>page {{ currentOffset() / pageSize + 1 }}</span>
-        <button (click)="nextPage()" [disabled]="!hasMorePlayers()" aria-label="Next page">&gt;</button>
+    <div class="load-more" #loadSentinel>
+        <span *ngIf="isLoadingMore()" role="status">Laddar fler medlemmar...</span>
     </div>
 
     <dialog #historyDialog class="history-dialog" aria-labelledby="history-dialog-title"

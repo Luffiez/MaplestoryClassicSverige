@@ -1,21 +1,21 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { forkJoin } from 'rxjs';
 import { LeaderboardEntry, LeaderboardService } from '../../services/leaderboard.service';
 import { getJobIconUrl } from '../../job-icon';
+import { ClassFilterComponent } from '../class-filter/class-filter.component';
+import { PodiumComponent } from '../podium/podium.component';
 
 @Component({
     selector: 'app-leaderboard',
     changeDetection: ChangeDetectionStrategy.OnPush,
-    imports: [NgOptimizedImage, RouterLink],
+    imports: [RouterLink, ClassFilterComponent, PodiumComponent],
     templateUrl: './leaderboard.component.html',
     styleUrl: './leaderboard.component.css'
 })
 export class LeaderboardComponent implements OnInit {
     private readonly leaderboardService = inject(LeaderboardService);
 
-    protected readonly podiumPlaces = [0, 1, 2];
     protected readonly getJobIcon = getJobIconUrl;
     private readonly rankedEntries = signal<LeaderboardEntry[]>([]);
     private readonly allEntries = signal<LeaderboardEntry[]>([]);

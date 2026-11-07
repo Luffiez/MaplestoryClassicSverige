@@ -33,14 +33,37 @@
                         <span class="monster-level" *ngIf="monster.level !== null">Lv. {{ monster.level }}</span>
                     </li>
                 </ul>
-                <ul class="member-list">
-                    <li class="member-item" *ngFor="let member of map.members">
-                        <span class="member-character">{{ member.characterName }}</span>
-                        <a class="member-user" routerLink="/players"
-                            [queryParams]="{ search: member.discordUsername || member.discordUserId }"
-                            title="Visa medlemmens profil">@{{ member.discordUsername || member.discordUserId }}</a>
-                    </li>
-                </ul>
+                <table class="member-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Karaktär</th>
+                            <th scope="col">Jobb</th>
+                            <th scope="col" class="col-level">Level</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let member of map.members">
+                            <td>
+                                <a class="member-link member-character" routerLink="/players"
+                                    [queryParams]="{ search: member.discordUsername || member.discordUserId }"
+                                    title="Visa medlemmens profil">{{ member.characterName }}</a>
+                            </td>
+                            <td>
+                                <a class="member-link member-job" routerLink="/players"
+                                    [queryParams]="{ search: member.discordUsername || member.discordUserId }"
+                                    title="Visa medlemmens profil">
+                                    <img *ngIf="getJobIcon(member.class)" class="job-icon" [src]="getJobIcon(member.class)" alt="" />
+                                    {{ member.job }}
+                                </a>
+                            </td>
+                            <td class="col-level">
+                                <a class="member-link" routerLink="/players"
+                                    [queryParams]="{ search: member.discordUsername || member.discordUserId }"
+                                    title="Visa medlemmens profil">Lv {{ member.level }}</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </details>
     </div>

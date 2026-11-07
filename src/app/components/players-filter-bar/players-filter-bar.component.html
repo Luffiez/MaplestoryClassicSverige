@@ -1,0 +1,40 @@
+<div class="filters-bar">
+    <button class="filters-toggle" type="button" [attr.aria-expanded]="filtersExpanded()"
+        aria-controls="player-filters" (click)="filtersExpanded.set(!filtersExpanded())">
+        Filtrering <span aria-hidden="true">{{ filtersExpanded() ? '−' : '+' }}</span>
+    </button>
+    <div id="player-filters" class="filters-controls" [class.filters-collapsed]="!filtersExpanded()">
+        <div class="search-bar">
+            <input type="search" class="search-input" placeholder="Sök på discord eller karaktärsnamn..."
+                aria-label="Sök medlemmar" [value]="searchQuery()" (input)="searchChange.emit($any($event.target).value)" />
+        </div>
+        <label class="filter-field">
+            <select class="filter-select" aria-label="Filtrera medlemmar efter karaktärsjobb"
+                [value]="selectedJob()" (change)="jobChange.emit($any($event.target).value)">
+                <option value="">Alla jobb</option>
+                @for (job of availableJobs(); track job) {
+                    <option [value]="job">{{ job }}</option>
+                }
+            </select>
+        </label>
+        <label class="filter-field">
+            <select class="filter-select" aria-label="Sortera medlemmar" [value]="selectedSort()"
+                (change)="sortChange.emit($any($event.target).value)">
+                <option value="default">Standardordning</option>
+                <option value="created-asc">Medlemsålder ↑</option>
+                <option value="created-desc">Medlemsålder ↓</option>
+                <option value="level-asc">Karaktärslevel ↑</option>
+                <option value="level-desc">Karaktärslevel ↓</option>
+            </select>
+        </label>
+        <label class="filter-field">
+            <select class="filter-select" aria-label="Visa medlemmar" [value]="memberView()"
+                (change)="memberViewChange.emit($any($event.target).value)">
+                <option value="all">Alla medlemmar</option>
+                <option value="favorites">Endast favoriter ({{ favoriteCount() }})</option>
+                <option value="online">Endast online</option>
+            </select>
+        </label>
+    </div>
+    <button class="history-button compare-open" type="button" (click)="compareOpen.emit()">Jämför karaktärer</button>
+</div>

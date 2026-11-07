@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { PlayerService } from '../../services/player.service';
 import { PartyListResponse } from '../../models/player.model';
+import { getJobIconUrl } from '../../job-icon';
 
 @Component({
     selector: 'app-parties',
@@ -15,6 +16,7 @@ export class PartiesComponent implements OnInit {
     parties = signal<PartyListResponse | null>(null);
     isLoading = signal(true);
     error = signal<string | null>(null);
+    readonly getJobIcon = getJobIconUrl;
 
     constructor(private playerService: PlayerService) { }
 

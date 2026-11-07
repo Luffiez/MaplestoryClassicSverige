@@ -1,0 +1,81 @@
+<div class="top-bar">
+  <nav class="desktop-nav" *ngIf="authService.isAuthenticated()" aria-label="Huvudmeny">
+    <ul class="nav-links">
+      <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="soundClick.emit()">Hem</a></li>
+      <li><a routerLink="/players" routerLinkActive="active" (click)="soundClick.emit()">Medlemmar</a></li>
+      <li><a routerLink="/party" routerLinkActive="active" (click)="soundClick.emit()">Party</a></li>
+      <li><a routerLink="/topplistan" routerLinkActive="active" (click)="soundClick.emit()">Topplistan</a></li>
+      <li><a routerLink="/info" routerLinkActive="active" ariaCurrentWhenActive="page"
+          (click)="soundClick.emit()">Info</a></li>
+      <li><a routerLink="/patchnotes" routerLinkActive="active" ariaCurrentWhenActive="page"
+          (click)="soundClick.emit()">Patchnotes</a></li>
+    </ul>
+  </nav>
+
+  <button type="button" class="mobile-menu-toggle" (click)="toggleMobileMenu()"
+    [attr.aria-expanded]="mobileMenuOpen()" aria-controls="mobile-navigation"
+    [attr.aria-label]="mobileMenuOpen() ? 'Stäng menyn' : 'Öppna menyn'">
+    <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+    @if (currentPageLabel()) {
+    <span class="mobile-menu-label">{{ currentPageLabel() }}</span>
+    }
+  </button>
+
+  <div class="auth-buttons desktop-auth">
+    <button type="button" class="mute-toggle" (click)="muteToggle.emit()"
+      [attr.aria-label]="isMuted() ? 'Unmute sound' : 'Mute sound'">
+      @if (isMuted()) {
+      <mat-icon>volume_off</mat-icon>
+      } @else {
+      <mat-icon>volume_up</mat-icon>
+      }
+    </button>
+
+    @if (authService.user(); as user) {
+    <button type="button" class="profile-link" routerLink="/players"
+      [queryParams]="{ search: user.id }" (click)="soundClick.emit()"
+      aria-label="Min profil" title="Min profil">
+      <mat-icon>person</mat-icon>
+    </button>
+    }
+
+    <button *ngIf="authService.isAuthenticated()" class="logout" (click)="soundClick.emit(); authService.logout()">
+      Logga ut <mat-icon>exit_to_app</mat-icon>
+    </button>
+  </div>
+
+  <nav *ngIf="mobileMenuOpen()" id="mobile-navigation" class="mobile-nav" aria-label="Mobilmeny">
+    <ul class="nav-links" *ngIf="authService.isAuthenticated()">
+      <li><a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" (click)="closeMobileMenu(); soundClick.emit()">Hem</a></li>
+      <li><a routerLink="/players" routerLinkActive="active" (click)="closeMobileMenu(); soundClick.emit()">Medlemmar</a>
+      </li>
+      <li><a routerLink="/party" routerLinkActive="active" (click)="closeMobileMenu(); soundClick.emit()">Party</a></li>
+      <li><a routerLink="/topplistan" routerLinkActive="active" (click)="closeMobileMenu(); soundClick.emit()">Topplistan</a></li>
+      <li><a routerLink="/info" routerLinkActive="active" ariaCurrentWhenActive="page"
+          (click)="closeMobileMenu(); soundClick.emit()">Info</a></li>
+      <li><a routerLink="/patchnotes" routerLinkActive="active" ariaCurrentWhenActive="page"
+          (click)="closeMobileMenu(); soundClick.emit()">Patchnotes</a></li>
+    </ul>
+
+    <div class="auth-buttons mobile-auth">
+      <button type="button" class="mute-toggle" (click)="muteToggle.emit()"
+        [attr.aria-label]="isMuted() ? 'Unmute sound' : 'Mute sound'">
+        <mat-icon>{{ isMuted() ? 'volume_off' : 'volume_up' }}</mat-icon>
+        {{ isMuted() ? 'Ljud på' : 'Ljud av' }}
+      </button>
+
+      @if (authService.user(); as user) {
+      <button type="button" class="profile-link" routerLink="/players"
+        [queryParams]="{ search: user.id }" (click)="closeMobileMenu(); soundClick.emit()">
+        <mat-icon>person</mat-icon>
+        Min profil
+      </button>
+      }
+
+      <button *ngIf="authService.isAuthenticated()" class="logout"
+        (click)="closeMobileMenu(); soundClick.emit(); authService.logout()">
+        Logga ut <mat-icon>exit_to_app</mat-icon>
+      </button>
+    </div>
+  </nav>
+</div>

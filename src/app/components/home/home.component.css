@@ -229,6 +229,50 @@ p {
     white-space: nowrap;
 }
 
+.daily-stats {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 2px solid #4d3b2a;
+    border-radius: 14px;
+    background: #fffdf7;
+    box-shadow: 0 3px 0 #8b5a1a;
+}
+
+.daily-stats-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.daily-stats h3 {
+    margin: 0;
+    color: #20160f;
+    font-size: 1.1rem;
+}
+
+.daily-chart + .daily-chart {
+    margin-top: 1rem;
+}
+
+.daily-chart h4 {
+    margin: 0 0 0.5rem;
+    color: #392918;
+    font-size: 0.9rem;
+}
+
+.daily-bar {
+    fill: #d18a2b;
+    stroke: #4d3b2a;
+    stroke-width: 1;
+}
+
+.daily-bar:hover {
+    fill: #efb75d;
+}
+
 @media (max-width: 600px) {
     .class-bar-row {
         grid-template-columns: 1fr;

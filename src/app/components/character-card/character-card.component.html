@@ -1,0 +1,56 @@
+<div class="character-item">
+    <div class="character-portrait" [style.background-image]="classBackground()">
+        @if (character().characterImageUrl; as imageUrl) {
+            <div class="character-image">
+                <img [src]="imageUrl" [alt]="character().characterName" />
+            </div>
+        } @else {
+            <div class="character-image missing-image" aria-label="Missing character image">
+                Missing
+            </div>
+        }
+        <h4 class="character-name">{{ character().characterName }}</h4>
+        @if (trophy(); as trophyImage) {
+            <img class="character-trophy" [ngSrc]="trophyImage.src" [alt]="trophyImage.alt"
+                [title]="trophyImage.title" width="48" height="48" />
+        }
+    </div>
+    <div class="character-info">
+        <div class="character-details">
+            <span><strong>Level:</strong> {{ character().level }}
+                @if (levelGain() > 0) {
+                    <span class="level-gain" title="Levlar senaste 7 dagarna"
+                        [attr.aria-label]="'Levlar senaste 7 dagarna: ' + levelGain()">↑ {{ levelGain() }}</span>
+                }
+            </span>
+            <span><strong>Job:</strong>
+                @if (jobIcon(); as icon) {
+                    <img class="job-icon" [src]="icon" alt="" />
+                }
+                {{ character().job }}
+            </span>
+            @if (character().rank) {
+                <span><strong>Official Rank:</strong> {{ character().rank }}</span>
+            }
+            @if (sverigeRank()) {
+                <span><strong>Sverige Rank:</strong> {{ sverigeRank() }}</span>
+            }
+            <span><strong>Uppdaterad:</strong> {{ character().lastSyncedAt | date: 'short' }}</span>
+        </div>
+    </div>
+    <div class="character-footer">
+        @if (showShopLinks()) {
+            <a class="history-button shop-link" [href]="shopUrl()" target="_blank" rel="noopener noreferrer">
+                <img src="store-permit.png" alt="" aria-hidden="true" />
+                meso.watch
+            </a>
+        }
+        <button type="button" class="history-button" (click)="historyRequested.emit(character())">
+            <svg class="history-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="9" />
+                <path d="M12 7v5l3 2" />
+            </svg>
+            Historik
+        </button>
+    </div>
+</div>

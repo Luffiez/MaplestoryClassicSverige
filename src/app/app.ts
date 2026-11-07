@@ -1,13 +1,13 @@
 import { Component, inject, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { MatIconModule } from '@angular/material/icon';
+import { RouterOutlet } from '@angular/router';
 import { AuthService } from './services/auth/auth.service';
 import { AnnouncementBannerComponent } from './components/announcement-banner/announcement-banner.component';
+import { NavbarComponent } from './components/navbar/navbar.component';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, MatIconModule, AnnouncementBannerComponent],
+  imports: [CommonModule, RouterOutlet, AnnouncementBannerComponent, NavbarComponent],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
@@ -22,7 +22,6 @@ export class App implements OnDestroy {
   private readonly sfx = new Audio('maplestory-click.mp3');
   isMuted = signal(false);
   isLogoHovered = signal(false);
-  mobileMenuOpen = signal(false);
   mascotVisible = signal(false);
 
   constructor() {
@@ -78,13 +77,5 @@ export class App implements OnDestroy {
     this.sfx.play().catch(() => {
       // Ignore autoplay restrictions until the user interacts.
     });
-  }
-
-  toggleMobileMenu(): void {
-    this.mobileMenuOpen.update(isOpen => !isOpen);
-  }
-
-  closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
   }
 }

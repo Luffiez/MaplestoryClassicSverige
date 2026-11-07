@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 import { Observable, of, retry, switchMap, throwError, timer } from 'rxjs';
-import { CharacterLevelHistoryEntry, User, UserSummary, UserStats, PaginatedResponse, PartyListResponse, CharacterLevelUp } from '../models/player.model';
+import { CharacterLevelHistoryEntry, DailyLevelUp, User, UserSummary, UserStats, PaginatedResponse, PartyListResponse, CharacterLevelUp } from '../models/player.model';
 import { AuthService } from './auth/auth.service';
 import { environment } from '../../environments/environment';
 import { MOCK_AUTH_USER, MOCK_CHARACTER_LEVEL_HISTORY, MOCK_USERS } from '../mocks/mock-users';
@@ -113,6 +113,27 @@ export class PlayerService {
         }));
     }
 
+    getDailyLevelUps(days: number): Observable<DailyLevelUp[]> {
+        if (environment.devMode) {
+            const today = new Date();
+            return of(Array.from({ length: days }, (_, offset) => {
+                const date = new Date(today);
+                date.setDate(today.getDate() - (days - 1 - offset));
+                const levelUps = (offset * 7) % 9;
+                return {
+                    date: date.toISOString().slice(0, 10),
+                    levelUps,
+                    activeCharacters: Math.max(0, levelUps - 1)
+                };
+            }));
+        }
+
+        return this.retryTransientErrors(this.http.get<DailyLevelUp[]>(`${this.apiUrl}/stats/history`, {
+            headers: this.getHeaders(),
+            params: { days }
+        }));
+    }
+
     getOnlineUserIds(): Observable<string[]> {
         if (environment.devMode) {
             return of([MOCK_AUTH_USER.id]);
@@ -139,8 +160,8 @@ export class PlayerService {
     getParties(): Observable<PartyListResponse> {
         if (environment.devMode) {
             const maps = [
-                { mapName: 'Sleepywood', monsters: [{ name: 'Zombie Mushroom', level: 24, iconUrl: 'https://meowdb.com/msclassic/monsters/sprites/mob_21.png' }, { name: 'Horny Mushroom', level: 25, iconUrl: null }], members: MOCK_USERS.slice(0, 2).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) },
-                { mapName: 'Henesys Hunting Ground', monsters: [{ name: 'Orange Mushroom', level: 8, iconUrl: null }], members: MOCK_USERS.slice(2, 3).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true })) }
+                { mapName: 'Sleepywood', monsters: [{ name: 'Zombie Mushroom', level: 24, iconUrl: 'https://meowdb.com/msclassic/monsters/sprites/mob_21.png' }, { name: 'Horny Mushroom', level: 25, iconUrl: null }], members: MOCK_USERS.slice(0, 2).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true, level: user.characters[0]?.level ?? 0, class: user.characters[0]?.class ?? '', job: user.characters[0]?.job ?? '' })) },
+                { mapName: 'Henesys Hunting Ground', monsters: [{ name: 'Orange Mushroom', level: 8, iconUrl: null }], members: MOCK_USERS.slice(2, 3).map(user => ({ discordUserId: user.discordUserId, discordUsername: user.discordUsername ?? null, characterName: user.characters[0]?.characterName ?? user.discordUserId, isPrimaryCharacter: true, level: user.characters[0]?.level ?? 0, class: user.characters[0]?.class ?? '', job: user.characters[0]?.job ?? '' })) }
             ];
             return of({ maps, totalMaps: maps.length, totalMembers: maps.reduce((sum, map) => sum + map.members.length, 0) });
         }
