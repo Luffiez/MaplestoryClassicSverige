@@ -4,7 +4,7 @@ import { AuthService } from './services/auth/auth.service';
 import { environment } from '../environments/environment';
 import { map } from 'rxjs';
 
-export const authGuard: CanActivateFn = () => {
+export const authGuard: CanActivateFn = (route, state) => {
     const authService = inject(AuthService);
     const router = inject(Router);
 
@@ -13,6 +13,12 @@ export const authGuard: CanActivateFn = () => {
     }
 
     return authService.waitForAuthInitialization().pipe(
-        map(isAuthenticated => isAuthenticated || router.createUrlTree(['/']))
+        map(isAuthenticated => {
+            if (isAuthenticated) {
+                return true;
+            }
+            router.navigate(['/']);
+            return false;
+        })
     );
 };
