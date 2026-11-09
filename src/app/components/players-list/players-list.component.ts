@@ -270,6 +270,9 @@ export class PlayersListComponent implements OnInit {
         });
 
         effect(onCleanup => {
+            // Re-create the observer whenever the list changes: a new observer reports the sentinel's current
+            // visibility, so it keeps loading when the sentinel is still on screen after a page was added.
+            this.players();
             const sentinel = this.loadSentinel()?.nativeElement;
             if (!sentinel) {
                 return;
@@ -446,6 +449,7 @@ export class PlayersListComponent implements OnInit {
     loadPlayers(): void {
         const requestId = ++this.loadRequestId;
         this.error.set(null);
+        this.isLoadingMore.set(false);
         this.visibleCount.set(PAGE_SIZE);
 
         if (!this.isFiltering()) {
@@ -463,19 +467,18 @@ export class PlayersListComponent implements OnInit {
     }
 
     loadMore(): void {
-        if (!this.hasMorePlayers()) {
+        if (!this.hasMorePlayers() || this.isLoadingMore()) {
+            return;
+        }
+
+        const needsServerPage = !this.isFiltering() && this.allPlayers().length <= this.visibleCount();
+        if (needsServerPage) {
+            this.isLoadingMore.set(true);
+            this.loadServerPage(this.loadRequestId);
             return;
         }
 
         this.visibleCount.update(count => count + PAGE_SIZE);
-        const needsServerPage = !this.isFiltering()
-            && !this.isLoadingMore()
-            && this.loadedServerCount < this.serverTotalCount()
-            && this.allPlayers().length < this.visibleCount();
-        if (needsServerPage) {
-            this.isLoadingMore.set(true);
-            this.loadServerPage(this.loadRequestId);
-        }
     }
 
     private loadSummary(): void {
@@ -495,7 +498,10 @@ export class PlayersListComponent implements OnInit {
                 const items = response.items ?? [];
                 this.allPlayers.update(current => [...current, ...items]);
                 this.loadedServerCount += items.length;
-                this.serverTotalCount.set(response.totalCount ?? this.loadedServerCount);
+                // An empty page means the server has no more data; stop instead of re-requesting it forever.
+                this.serverTotalCount.set(items.length === 0
+                    ? this.loadedServerCount
+                    : response.totalCount ?? this.loadedServerCount);
                 this.loadNicknames(items);
                 this.isLoading.set(false);
                 this.isLoadingMore.set(false);
